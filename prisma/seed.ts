@@ -1,12 +1,14 @@
 import "dotenv/config";
 import bcrypt from "bcryptjs";
 import { PrismaClient } from "../app/generated/prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
 
 // حساب الأدمن — من .env لو موجود، وإلا الافتراضي (غيّر كلمة السر في الإنتاج!)
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@syntax.eg";
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "Admin@12345";
 
-const prisma = new PrismaClient();
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
+const prisma = new PrismaClient({ adapter });
 
 // منتجات تجريبية — مزيج رقمي وملموس
 const products = [
