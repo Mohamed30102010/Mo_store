@@ -1,0 +1,129 @@
+// Prisma schema — منصة متجر + صفحة هبوط (صفر عمولة)
+// المرحلة ١: موديل المنتجات فقط. المراحل الجاية هنضيف Users / Orders ...
+// docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// المنتج: رقمي (PDF/كورس) أو ملموس
+model Product {
+  id             String   @id @default(cuid())
+  slug           String   @unique // يُستخدم في رابط صفحة المنتج
+  name           String
+  shortDesc      String? // وصف مختصر يظهر في الكارت
+  description    String   @default("") // الوصف الكامل لصفحة المنتج
+  priceCents     Int // السعر بالقروش (لتفادي مشاكل الأرقام العشرية)
+  compareAtCents Int? // السعر قبل الخصم (اختياري) لعرض الخصم
+  currency       String   @default("EGP")
+  type           String   @default("physical") // "physical" | "digital"
+  images         String   @default("[]") // مصفوفة روابط صور بصيغة JSON
+  featured       Boolean  @default(false) // يظهر في قسم "مميز" بصفحة الهبوط
+  active         Boolean  @default(true) // معروض للبيع؟
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([active, featured])
+}
+
+/// العميل/المستخدم (بأدوار: عميل أو أدمن)
+model User {
+  id            String              @id @default(cuid())
+  name          String
+  email         String              @unique
+  phone         String?
+  passwordHash  String
+  role          String              @default("customer") // "customer" | "admin"
+  orders        Order[]
+  pointsAccount PointsAccount?
+  pointsTxns    PointsTransaction[]
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+}
+
+/// الطلب — مرتبط بعميل مسجّل أو زائر (userId = null)
+model Order {
+  id            String      @id @default(cuid())
+  orderNumber   String      @unique // رقم مقروء للتتبّع (SYX-XXXXXX)
+  userId        String? // null = طلب كزائر
+  user          User?       @relation(fields: [userId], references: [id])
+  customerName  String
+  customerPhone String
+  customerEmail String?
+  address       String? // للمنتجات الملموسة
+  paymentMethod String // "cash" | "transfer"
+  status        String      @default("pending") // pending | confirmed | delivered | cancelled | returned
+  subtotalCents Int
+  shippingCents Int         @default(0) // تكلفة الشحن وقت الطلب (snapshot)
+  totalCents    Int         @default(0) // الإجمالي النهائي = subtotal + shipping
+  proofImage    String? // مسار صورة إثبات الدفع (للتحويل)
+  note          String?
+  items         OrderItem[]
+
+  // ═══ نقاط المكافآت — حماية من ازدواجية المنح (Phase 36) ═══
+  rewardPointsEarned   Int?     // null = لسه ماتمنحش نقاط لهذا الطلب. رقم = القيمة اللي اتمنحت (مرة واحدة بس)
+  rewardPointsReversed Int      @default(0) // كام نقطة اترجعت (استرجاع/إلغاء) من رصيد النقاط بتاع الطلب ده
+  pointsTxns           PointsTransaction[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+}
+
+/// إعدادات المتجر (مفتاح/قيمة) — البكسلات، العرض الإضافي، نسبة المكافآت، وأي إعداد مستقبلي
+model Setting {
+  key       String   @id
+  value     String   @default("")
+  updatedAt DateTime @updatedAt
+}
+
+/// عنصر داخل الطلب (نسخة ثابتة من بيانات المنتج وقت الشراء)
+model OrderItem {
+  id         String  @id @default(cuid())
+  orderId    String
+  order      Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId  String? // مرجع للمنتج الأصلي (لو موجود)
+  name       String // snapshot للاسم
+  priceCents Int // snapshot للسعر
+  qty        Int
+  type       String // "physical" | "digital"
+
+  @@index([orderId])
+}
+
+/// رصيد نقاط العميل — سجل واحد لكل مستخدم، بيتحدّث فقط عبر معاملات PointsTransaction (Phase 38)
+model PointsAccount {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id])
+  balance        Int      @default(0)
+  lifetimeEarned Int      @default(0)
+  lifetimeSpent  Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+/// دفتر أستاذ حركات النقاط — كل تغيير في الرصيد بيتسجّل هنا (Phase 38/40)
+model PointsTransaction {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  orderId      String?
+  order        Order?   @relation(fields: [orderId], references: [id])
+  type         String // "EARNED" | "SPENT" | "REFUNDED" | "ADJUSTMENT" | "EXPIRED"
+  amount       Int // موجب (زيادة) أو سالب (نقصان)
+  description  String
+  balanceAfter Int
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
+  @@index([orderId])
+}
