@@ -1,8 +1,11 @@
 import { PrismaClient } from "@/app/generated/prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
 
-// PostgreSQL — بيستخدم DATABASE_URL من الـ schema مباشرة (متغير بيئة سيرفر فقط)
+// PostgreSQL — Prisma 7 بيحتاج "Adapter" رسمي للاتصال وقت التشغيل (مش url في الـ schema)
 function makeClient() {
+  const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
   return new PrismaClient({
+    adapter,
     log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
   });
 }
