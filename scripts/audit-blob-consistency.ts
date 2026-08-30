@@ -17,8 +17,10 @@
 import "dotenv/config";
 import { list, del } from "@vercel/blob";
 import { PrismaClient } from "../app/generated/prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
 
-const prisma = new PrismaClient();
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
+const prisma = new PrismaClient({ adapter });
 
 /** نفس منطق lib/upload.ts::deleteBlobIfOwned — مكرّر هنا محليًا عشان السكريبت يفضل
  *  مستقل (بدون الاعتماد على alias "@/" اللي ممكن ما يتحلّش بره Next.js runtime،
