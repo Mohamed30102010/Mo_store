@@ -9,6 +9,10 @@ import CartDrawer from "@/components/CartDrawer";
 import TrackingPixels from "@/components/TrackingPixels";
 import { getRewardSettings } from "@/lib/rewards";
 
+// الليّاوت بيعمل استعلام لقاعدة البيانات (نسبة نقاط المكافآت) — لازم يفضل ديناميكي
+// عشان Next.js متحاولش تجهّزه بشكل ثابت وقت الـ build (لما الداتابيز مش متاحة أصلاً)
+export const dynamic = "force-dynamic";
+
 const cairo = Cairo({
   subsets: ["arabic", "latin"],
   variable: "--font-cairo",
