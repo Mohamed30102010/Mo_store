@@ -18,13 +18,18 @@ export type RewardSettings = {
 
 /** نسبة المكافآت الحالية من الإعدادات — بترجع الافتراضي (30%) لو مش متظبطة أو غير صالحة */
 export async function getRewardSettings(): Promise<RewardSettings> {
-  const settings = await getSettings();
-  const raw = Number(settings.reward_percent);
-  const percent =
-    Number.isFinite(raw) && raw >= MIN_REWARD_PERCENT && raw <= MAX_REWARD_PERCENT
-      ? raw
-      : DEFAULT_REWARD_PERCENT;
-  return { percent };
+  try {
+    const settings = await getSettings();
+    const raw = Number(settings.reward_percent);
+    const percent =
+      Number.isFinite(raw) && raw >= MIN_REWARD_PERCENT && raw <= MAX_REWARD_PERCENT
+        ? raw
+        : DEFAULT_REWARD_PERCENT;
+    return { percent };
+  } catch (e) {
+    console.error("getRewardSettings: تعذّر الوصول لقاعدة البيانات، استخدام النسبة الافتراضية.", e);
+    return { percent: DEFAULT_REWARD_PERCENT };
+  }
 }
 
 /** تحقّق من صحة نسبة مدخلة من الأدمن قبل الحفظ */
