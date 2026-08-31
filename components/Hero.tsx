@@ -17,7 +17,7 @@ export default function Hero() {
       <div className="relative mx-auto max-w-6xl px-4 py-16 text-center sm:py-24">
         <span className="code-eyebrow animate-fade-in-up inline-flex items-center gap-2 rounded-full border border-line bg-surface px-4 py-1.5 text-sm text-brand-300">
           <span className="text-muted">{"//"}</span>
-          صفر عمولة · تحكّم كامل
+          تجربتك تهمنا · لأن اختياراتك بتبدأ من هنا
           <span className="terminal-cursor" aria-hidden="true" />
         </span>
 
