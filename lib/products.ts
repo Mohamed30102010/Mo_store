@@ -11,6 +11,7 @@ export type ProductView = {
   description: string;
   priceCents: number;
   compareAtCents: number | null;
+  pointsPrice: number | null;
   currency: string;
   type: "physical" | "digital";
   images: string[];
@@ -28,6 +29,7 @@ export function toProductView(p: Product): ProductView {
     description: p.description,
     priceCents: p.priceCents,
     compareAtCents: p.compareAtCents,
+    pointsPrice: p.pointsPrice,
     currency: p.currency,
     type: p.type === "digital" ? "digital" : "physical",
     images: parseImagesJson(p.images),
@@ -97,6 +99,7 @@ export type ProductInput = {
   description: string;
   priceCents: number;
   compareAtCents: number | null;
+  pointsPrice: number | null;
   type: string;
   images: string[];
   featured: boolean;
@@ -174,4 +177,4 @@ export async function isSlugTaken(
     select: { id: true },
   });
   return !!row && row.id !== exceptId;
-}
+    }
