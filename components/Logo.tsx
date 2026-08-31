@@ -45,15 +45,6 @@ function MDMark() {
         fill="none"
       />
 
-      {/* أذنين الوحش في المنتصف (سالب/فراغ) */}
-      <path
-        d="M27 32c1 4 1 8 0 12M37 32c-1 4-1 8 0 12"
-        stroke="#050505"
-        strokeWidth="3.5"
-        strokeLinecap="round"
-        fill="none"
-      />
-
       {/* حرف D — الجزء الأيمن */}
       <path
         d="M34 20h6a12 12 0 0 1 0 24h-6V20Z"
