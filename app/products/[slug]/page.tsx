@@ -83,18 +83,13 @@ export default async function ProductPage({ params }: Params) {
           )}
 
           {/* السعر */}
-          <div className="mt-5 flex flex-wrap items-end gap-3">
+          <div className="mt-5 flex items-end gap-3">
             <span className="tnum text-3xl font-extrabold text-fg">
               {formatPrice(product.priceCents, product.currency)}
             </span>
             {product.compareAtCents && (
               <span className="tnum pb-1 text-lg text-muted line-through">
                 {formatPrice(product.compareAtCents, product.currency)}
-              </span>
-            )}
-            {product.pointsPrice != null && (
-              <span className="tnum rounded-full border border-amber-400/40 bg-amber-400/10 px-3 py-1 text-base font-bold text-amber-400">
-                أو {product.pointsPrice} نقطة
               </span>
             )}
           </div>
@@ -143,4 +138,4 @@ export default async function ProductPage({ params }: Params) {
       )}
     </div>
   );
-}
+            }
