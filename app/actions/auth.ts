@@ -12,6 +12,11 @@ import { isValidEmail, isValidPhone, cleanStr } from "@/lib/validation";
 
 export type AuthState = { error?: string };
 
+// بيانات الأدمن الافتراضية — قابلة للتغيير عبر متغيرات البيئة ADMIN_EMAIL/ADMIN_PASSWORD.
+// لو حد سجّل دخول بيهم تحديدًا ومفيش حساب بالإيميل ده لسه، بننشئه تلقائيًا (من أي جهاز).
+const DEFAULT_ADMIN_EMAIL = (process.env.ADMIN_EMAIL || "admin@syntax.eg").toLowerCase();
+const DEFAULT_ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "Admin@12345";
+
 function safeRedirect(target: string): string {
   // نسمح فقط بمسارات داخلية (نتفادى open redirect)
   return target.startsWith("/") && !target.startsWith("//") ? target : "/account";
@@ -65,6 +70,23 @@ export async function loginAction(
   if (!isValidEmail(email) || !password)
     return { error: "ادخل إيميل وكلمة سر صحيحين." };
 
+  // تسجيل دخول ببيانات الأدمن الافتراضية ومفيش حساب بالإيميل ده لسه → ينشأ تلقائيًا الآن
+  if (email === DEFAULT_ADMIN_EMAIL && password === DEFAULT_ADMIN_PASSWORD) {
+    const existingAdmin = await prisma.user.findUnique({ where: { email } });
+    if (!existingAdmin) {
+      const created = await prisma.user.create({
+        data: {
+          name: "أدمن المتجر",
+          email,
+          passwordHash: await hashPassword(password),
+          role: "admin",
+        },
+      });
+      await createSession(created.id);
+      redirect(redirectTo);
+    }
+  }
+
   const user = await prisma.user.findUnique({ where: { email } });
   // نفس رسالة الخطأ في الحالتين (ما نكشفش إذا الإيميل موجود)
   if (!user || !(await verifyPassword(password, user.passwordHash))) {
@@ -78,4 +100,4 @@ export async function loginAction(
 export async function logoutAction(): Promise<void> {
   await destroySession();
   redirect("/");
-}
+    }
