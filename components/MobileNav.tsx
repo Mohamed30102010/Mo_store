@@ -52,7 +52,7 @@ export default function MobileNav({
       {/* لوحة القائمة (تنزلق من اليمين في RTL) */}
       <nav
         aria-label="القائمة الرئيسية"
-        className={`fixed inset-y-0 right-0 z-50 flex w-72 max-w-[85vw] flex-col gap-1 border-l border-line bg-bg p-5 shadow-2xl transition-transform duration-300 ${
+        className={`fixed inset-y-0 right-0 z-50 flex w-72 max-w-[85vw] flex-col gap-1 border-l border-line bg-[#1a1608] p-5 shadow-2xl transition-transform duration-300 ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
       >
