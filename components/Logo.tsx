@@ -1,65 +1,67 @@
 import Link from "next/link";
 import { site } from "@/lib/site";
 
-/** لوجو سينتاكس: دائرة الدماغ المقسوم (برتقالي/أزرق) + الاسم */
+/** لوجو MO STORE: مونوجرام MD بأسلوب Monster Design — أسود وذهبي */
 export default function Logo({ className = "" }: { className?: string }) {
   return (
     <Link href="/" className={`flex items-center gap-2.5 ${className}`}>
+      <MDMark />
       <span className="text-lg font-extrabold leading-none">
         <span className="text-gradient">{site.name}</span>{" "}
         <span className="text-fg">{site.nameSuffix}</span>
       </span>
-      <BrainMark />
     </Link>
   );
 }
 
-function BrainMark() {
+function MDMark() {
   return (
     <svg
-      width="38"
-      height="38"
+      width="40"
+      height="40"
       viewBox="0 0 64 64"
       fill="none"
       aria-hidden="true"
       className="shrink-0"
     >
       <defs>
-        <linearGradient id="warm" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#f59e0b" />
-          <stop offset="1" stopColor="#ef4444" />
-        </linearGradient>
-        <linearGradient id="cool" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#3b82f6" />
-          <stop offset="1" stopColor="#6d28d9" />
+        <linearGradient id="mdGold" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#f5e196" />
+          <stop offset="0.5" stopColor="#d4af37" />
+          <stop offset="1" stopColor="#b8912a" />
         </linearGradient>
       </defs>
 
-      {/* النصف الأيمن (بارد/منطقي) */}
+      {/* خلفية دائرية سوداء */}
+      <circle cx="32" cy="32" r="31" fill="#050505" stroke="url(#mdGold)" strokeWidth="1.5" />
+
+      {/* حرف M — الجزء الأيسر */}
       <path
-        d="M32 5a27 27 0 0 1 0 54Z"
-        fill="url(#cool)"
-        opacity="0.95"
+        d="M14 44V20l8 12 6-12v24"
+        stroke="url(#mdGold)"
+        strokeWidth="5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
       />
-      {/* النصف الأيسر (دافئ/إبداعي) */}
-      <path d="M32 5a27 27 0 0 0 0 54Z" fill="url(#warm)" opacity="0.95" />
 
-      {/* عُقد الشبكة */}
-      <g fill="#0b0b12">
-        <circle cx="22" cy="24" r="2.4" />
-        <circle cx="18" cy="38" r="2.4" />
-        <circle cx="26" cy="44" r="2.4" />
-        <circle cx="42" cy="22" r="2.4" />
-        <circle cx="46" cy="36" r="2.4" />
-        <circle cx="38" cy="44" r="2.4" />
-      </g>
-      <g stroke="#0b0b12" strokeWidth="1.4" opacity="0.7">
-        <path d="M22 24 18 38M18 38 26 44" />
-        <path d="M42 22 46 36M46 36 38 44" />
-      </g>
+      {/* أذنين الوحش في المنتصف (سالب/فراغ) */}
+      <path
+        d="M27 32c1 4 1 8 0 12M37 32c-1 4-1 8 0 12"
+        stroke="#050505"
+        strokeWidth="3.5"
+        strokeLinecap="round"
+        fill="none"
+      />
 
-      {/* خط الفصل */}
-      <line x1="32" y1="5" x2="32" y2="59" stroke="#0b0b12" strokeWidth="2" />
+      {/* حرف D — الجزء الأيمن */}
+      <path
+        d="M34 20h6a12 12 0 0 1 0 24h-6V20Z"
+        stroke="url(#mdGold)"
+        strokeWidth="5"
+        strokeLinejoin="round"
+        fill="none"
+      />
     </svg>
   );
 }
