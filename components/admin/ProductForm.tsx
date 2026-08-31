@@ -27,6 +27,8 @@ export default function ProductForm({
     product?.compareAtCents != null
       ? (product.compareAtCents / 100).toString()
       : "";
+  const pointsPriceStr =
+    product?.pointsPrice != null ? product.pointsPrice.toString() : "";
 
   return (
     <form action={formAction} className="flex flex-col gap-5">
@@ -54,6 +56,15 @@ export default function ProductForm({
           type="number"
           step="0.01"
           defaultValue={compareEGP}
+        />
+        <Field
+          label="السعر (نقاط)"
+          name="pointsPrice"
+          type="number"
+          step="1"
+          min="0"
+          defaultValue={pointsPriceStr}
+          placeholder="اتركه فاضي لو المنتج ميتشريش بالنقاط"
         />
         <div>
           <label className="block text-sm text-muted" htmlFor="type">
@@ -169,6 +180,7 @@ function Field({
   placeholder,
   required,
   step,
+  min,
 }: {
   label: string;
   name: string;
@@ -177,6 +189,7 @@ function Field({
   placeholder?: string;
   required?: boolean;
   step?: string;
+  min?: string;
 }) {
   return (
     <div>
@@ -188,6 +201,7 @@ function Field({
         name={name}
         type={type}
         step={step}
+        min={min}
         defaultValue={defaultValue}
         placeholder={placeholder}
         required={required}
@@ -195,4 +209,4 @@ function Field({
       />
     </div>
   );
-}
+        }
