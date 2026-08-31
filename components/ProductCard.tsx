@@ -59,9 +59,16 @@ export default function ProductCard({
 
         <div className="mt-4 flex items-end justify-between gap-2">
           <div className="flex flex-col">
-            <span className="tnum text-lg font-extrabold text-fg">
-              {formatPrice(product.priceCents, product.currency)}
-            </span>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="tnum text-lg font-extrabold text-fg">
+                {formatPrice(product.priceCents, product.currency)}
+              </span>
+              {product.pointsPrice != null && (
+                <span className="tnum rounded-full border border-amber-400/40 bg-amber-400/10 px-2 py-0.5 text-xs font-bold text-amber-400">
+                  أو {product.pointsPrice} نقطة
+                </span>
+              )}
+            </div>
             {product.compareAtCents && (
               <span className="tnum text-sm text-muted line-through">
                 {formatPrice(product.compareAtCents, product.currency)}
@@ -79,4 +86,4 @@ export default function ProductCard({
       </div>
     </div>
   );
-}
+        }
