@@ -76,15 +76,6 @@ async function parseProductForm(
   if (compareRaw && compareAtCents === null)
     return { error: "السعر قبل الخصم غير صحيح." };
 
-  const pointsPriceRaw = cleanStr(formData.get("pointsPrice"), 20);
-  let pointsPrice: number | null = null;
-  if (pointsPriceRaw) {
-    const n = Number(pointsPriceRaw);
-    if (!Number.isFinite(n) || n < 0 || !Number.isInteger(n))
-      return { error: "السعر بالنقاط لازم يكون رقم صحيح موجب." };
-    pointsPrice = n;
-  }
-
   const type = cleanStr(formData.get("type"), 20) === "digital" ? "digital" : "physical";
   const shortDesc = cleanStr(formData.get("shortDesc"), 160) || null;
   const description = cleanStr(formData.get("description"), 4000);
@@ -132,7 +123,6 @@ async function parseProductForm(
       description,
       priceCents,
       compareAtCents,
-      pointsPrice,
       type,
       images: uniqueImages,
       featured,
@@ -224,4 +214,4 @@ export async function adjustPointsAction(
 
   revalidatePath("/admin/rewards");
   return { ok: true };
-    }
+                                }
