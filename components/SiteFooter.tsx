@@ -59,7 +59,7 @@ export default function SiteFooter() {
             © {year} {site.name} {site.nameSuffix}. كل الحقوق محفوظة.
           </p>
           <p className="rounded-full border border-line bg-surface px-3 py-1 font-medium text-brand-300">
-            صفر عمولة · بياناتك ملكك
+            سهل الاستخدام · بياناتك في أمان
           </p>
         </div>
       </div>
