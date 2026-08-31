@@ -9,6 +9,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 /// المنتج: رقمي (PDF/كورس) أو ملموس
@@ -20,6 +21,7 @@ model Product {
   description    String   @default("") // الوصف الكامل لصفحة المنتج
   priceCents     Int // السعر بالقروش (لتفادي مشاكل الأرقام العشرية)
   compareAtCents Int? // السعر قبل الخصم (اختياري) لعرض الخصم
+  pointsPrice    Int? // سعر المنتج بالنقاط (اختياري) — لو موجود يظهر جنب سعر الجنيه
   currency       String   @default("EGP")
   type           String   @default("physical") // "physical" | "digital"
   images         String   @default("[]") // مصفوفة روابط صور بصيغة JSON
