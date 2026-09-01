@@ -33,17 +33,18 @@ model Product {
 
 /// العميل/المستخدم (بأدوار: عميل أو أدمن)
 model User {
-  id            String              @id @default(cuid())
-  name          String
-  email         String              @unique
-  phone         String?
-  passwordHash  String
-  role          String              @default("customer") // "customer" | "admin"
-  orders        Order[]
-  pointsAccount PointsAccount?
-  pointsTxns    PointsTransaction[]
-  createdAt     DateTime            @default(now())
-  updatedAt     DateTime            @updatedAt
+  id              String              @id @default(cuid())
+  name            String
+  email           String              @unique
+  phone           String?
+  passwordHash    String
+  role            String              @default("customer") // "customer" | "admin"
+  orders          Order[]
+  pointsAccount   PointsAccount?
+  pointsTxns      PointsTransaction[]
+  productRequests ProductRequest[]
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
 }
 
 /// الطلب — مرتبط بعميل مسجّل أو زائر (userId = null)
@@ -125,4 +126,20 @@ model PointsTransaction {
 
   @@index([userId])
   @@index([orderId])
+}
+/// طلب "اطلب منتج" — العميل بيكتب المنتج اللي مش لاقيه في المتجر عشان الأدمن يتواصل معاه يدويًا
+model ProductRequest {
+  id        String   @id @default(cuid())
+  userId    String? // null = زائر مش مسجّل دخول
+  user      User?    @relation(fields: [userId], references: [id])
+  name      String
+  email     String
+  phone     String
+  message   String // وصف المنتج المطلوب
+  status    String   @default("new") // "new" | "contacted" | "closed"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
 }
