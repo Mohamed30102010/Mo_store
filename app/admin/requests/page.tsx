@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
-import { PRODUCT_REQUEST_STATUSES, setProductRequestStatusAction } from "@/app/actions/admin";
+import { setProductRequestStatusAction } from "@/app/actions/admin";
+import { PRODUCT_REQUEST_STATUSES } from "@/lib/product-requests";
 
 export const metadata = { title: "طلبات المنتجات" };
 export const dynamic = "force-dynamic";
