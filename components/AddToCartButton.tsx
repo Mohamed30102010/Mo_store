@@ -3,10 +3,12 @@
 import { useState } from "react";
 import { useCart, type CartItem } from "@/lib/cart";
 import type { ProductView } from "@/lib/products";
+import { calculateEarnedPoints } from "@/lib/rewards-client";
 
 type Props = {
   product: ProductView;
   variant?: "card" | "full";
+  rewardPercent?: number;
 };
 
 // نبني عنصر السلة من المنتج
@@ -22,7 +24,7 @@ function toCartItem(p: ProductView): Omit<CartItem, "qty"> {
   };
 }
 
-export default function AddToCartButton({ product, variant = "card" }: Props) {
+export default function AddToCartButton({ product, variant = "card", rewardPercent = 0 }: Props) {
   const { add } = useCart();
   const [qty, setQty] = useState(1);
   const [justAdded, setJustAdded] = useState(false);
@@ -49,6 +51,8 @@ export default function AddToCartButton({ product, variant = "card" }: Props) {
   }
 
   // النسخة الكاملة (صفحة المنتج): عدّاد كمية + زر كبير
+  const points = calculateEarnedPoints(product.priceCents * qty, rewardPercent);
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-3">
@@ -75,6 +79,14 @@ export default function AddToCartButton({ product, variant = "card" }: Props) {
         </div>
       </div>
 
+      {/* نقاط المكافآت المتوقّعة — بتتحدّث مع الكمية */}
+      {points > 0 && (
+        <p className="tnum flex items-center gap-1.5 text-sm font-medium text-amber-400">
+          <span aria-hidden="true">🎁</span>
+          هتكسب تقريبًا {points} نقطة مع الشراء ده
+        </p>
+      )}
+
       <button
         type="button"
         onClick={handleAdd}
@@ -94,4 +106,4 @@ export default function AddToCartButton({ product, variant = "card" }: Props) {
       )}
     </div>
   );
-}
+    }
