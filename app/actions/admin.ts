@@ -16,11 +16,9 @@ import {
 } from "@/lib/products";
 import { cleanStr, isNonEmpty } from "@/lib/validation";
 import { prisma } from "@/lib/prisma";
+import { PRODUCT_REQUEST_STATUSES, type ProductRequestStatus } from "@/lib/product-requests";
 
 // ===== طلبات "اطلب منتج" =====
-export const PRODUCT_REQUEST_STATUSES = ["new", "contacted", "closed"] as const;
-export type ProductRequestStatus = (typeof PRODUCT_REQUEST_STATUSES)[number];
-
 export async function setProductRequestStatusAction(formData: FormData): Promise<void> {
   await requireAdmin();
   const id = cleanStr(formData.get("id"), 40);
