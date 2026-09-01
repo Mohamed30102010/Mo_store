@@ -49,6 +49,12 @@ export default async function SearchPage({
           <p className="mt-1 text-sm text-muted">
             جرّب كلمة تانية أو اتأكد من الإملاء.
           </p>
+          <a
+            href="/request"
+            className="mt-5 rounded-xl bg-brand-gradient px-6 py-2.5 text-sm font-bold text-white transition-all hover:-translate-y-0.5 hover:opacity-95"
+          >
+            اطلب المنتج ده منّا
+          </a>
         </div>
       ) : (
         <>
