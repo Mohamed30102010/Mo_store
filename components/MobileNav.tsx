@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 
 type NavItem = { label: string; href: string };
@@ -13,6 +14,12 @@ export default function MobileNav({
   isAdmin: boolean;
 }) {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  // بنستنى الـ mount عشان نعمل createPortal بأمان (document مش موجود وقت الـ SSR)
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // قفل تمرير الصفحة + إغلاق بـ Esc أثناء فتح القائمة
   useEffect(() => {
@@ -40,73 +47,30 @@ export default function MobileNav({
         <MenuIcon />
       </button>
 
-      {/* الخلفية المعتمة */}
-      <div
-        onClick={() => setOpen(false)}
-        aria-hidden="true"
-        className={`fixed inset-0 z-50 bg-black/60 transition-opacity duration-300 ${
-          open ? "opacity-100" : "pointer-events-none opacity-0"
-        }`}
-      />
+      {/*
+        القائمة بتتعرض عن طريق Portal مباشرة جوه <body> بدل ما تفضل جوه الهيدر.
+        السبب: الهيدر عليه خاصية ضبابية (backdrop-blur)، وده بيكسر خاصية "fixed"
+        لأي عنصر جواه (بيخليها تتقيّد بحدود الهيدر بدل الشاشة كلها) — فبتظهر
+        القائمة متراكبة وشفافة مع محتوى الصفحة بدل ما تغطّيه بالكامل.
+      */}
+      {mounted &&
+        createPortal(
+          <>
+            {/* الخلفية المعتمة */}
+            <div
+              onClick={() => setOpen(false)}
+              aria-hidden="true"
+              className={`fixed inset-0 z-[100] bg-black/60 transition-opacity duration-300 ${
+                open ? "opacity-100" : "pointer-events-none opacity-0"
+              }`}
+            />
 
-      {/* لوحة القائمة (تنزلق من اليمين في RTL) */}
-      <nav
-        aria-label="القائمة الرئيسية"
-        className={`fixed inset-y-0 right-0 z-50 flex w-72 max-w-[85vw] flex-col gap-1 border-l border-line bg-bg p-5 shadow-2xl transition-transform duration-300 ${
-          open ? "translate-x-0" : "translate-x-full"
-        }`}
-      >
-        <div className="mb-4 flex items-center justify-between">
-          <span className="code-eyebrow text-sm text-muted">{"// menu"}</span>
-          <button
-            type="button"
-            onClick={() => setOpen(false)}
-            aria-label="إغلاق القائمة"
-            className="grid h-9 w-9 place-items-center rounded-lg border border-line text-muted transition-colors hover:bg-surface hover:text-fg"
-          >
-            ✕
-          </button>
-        </div>
-
-        {items.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            onClick={() => setOpen(false)}
-            className="rounded-xl px-3 py-3 font-semibold text-fg transition-colors hover:bg-surface"
-          >
-            {item.label}
-          </Link>
-        ))}
-
-        {isAdmin && (
-          <Link
-            href="/admin"
-            onClick={() => setOpen(false)}
-            className="mt-2 rounded-xl border border-line bg-surface px-3 py-3 font-semibold text-fg transition-colors hover:bg-surface-2"
-          >
-            لوحة التحكم
-          </Link>
-        )}
-      </nav>
-    </div>
-  );
-}
-
-function MenuIcon() {
-  return (
-    <svg
-      width="20"
-      height="20"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M4 7h16M4 12h16M4 17h16" />
-    </svg>
-  );
-}
+            {/* لوحة القائمة (تنزلق من اليمين في RTL) */}
+            <nav
+              aria-label="القائمة الرئيسية"
+              className={`fixed inset-y-0 right-0 z-[101] flex w-72 max-w-[85vw] flex-col gap-1 border-l border-line bg-bg p-5 shadow-2xl transition-transform duration-300 ${
+                open ? "translate-x-0" : "translate-x-full"
+              }`}
+            >
+              <div className="mb-4 flex items-center justify-between">
+                <span className="code-eyebrow text-sm text-muted">{"// menu"}</span>
