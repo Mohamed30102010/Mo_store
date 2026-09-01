@@ -33,6 +33,7 @@ html {
   scroll-behavior: smooth;
   background: var(--color-bg);
   color-scheme: dark;
+  overflow-x: hidden;
 }
 
 body {
@@ -40,6 +41,7 @@ body {
   color: var(--color-fg);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 /* أرقام متساوية العرض للأسعار */
