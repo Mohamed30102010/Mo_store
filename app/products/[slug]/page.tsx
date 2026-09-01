@@ -6,7 +6,7 @@ import { formatPrice, discountLabel } from "@/lib/format";
 import ProductGallery from "@/components/ProductGallery";
 import AddToCartButton from "@/components/AddToCartButton";
 import ProductGrid from "@/components/ProductGrid";
-import { getRewardSettings, calculateEarnedPoints } from "@/lib/rewards";
+import { getRewardSettings } from "@/lib/rewards";
 
 export const dynamic = "force-dynamic";
 
@@ -35,8 +35,7 @@ export default async function ProductPage({ params }: Params) {
   const discount = discountLabel(product.priceCents, product.compareAtCents);
   const isDigital = product.type === "digital";
   const { percent: rewardPercent } = await getRewardSettings();
-  const points = calculateEarnedPoints(product.priceCents, rewardPercent);
-
+  
   // منتجات تانية (نستبعد الحالي)
   const others = (await getActiveProducts())
     .filter((p) => p.id !== product.id)
@@ -94,14 +93,7 @@ export default async function ProductPage({ params }: Params) {
             )}
           </div>
 
-          {/* نقاط المكافآت المتوقّعة */}
-          {points > 0 && (
-            <p className="tnum mt-2 flex items-center gap-1.5 text-sm font-medium text-amber-400">
-              <span aria-hidden="true">🎁</span>
-              هتكسب تقريبًا {points} نقطة مع الشراء ده
-            </p>
-          )}
-
+          
           {/* ملاحظة التسليم حسب النوع */}
           <p className="mt-3 flex items-center gap-2 text-sm text-muted">
             <span aria-hidden="true">{isDigital ? "⬇️" : "🚚"}</span>
@@ -113,7 +105,7 @@ export default async function ProductPage({ params }: Params) {
           <div className="my-6 h-px bg-line" />
 
           {/* الإضافة للسلة */}
-          <AddToCartButton product={product} variant="full" />
+          <AddToCartButton product={product} variant="full" rewardPercent={rewardPercent} />
 
           {/* الوصف الكامل */}
           {product.description && (
