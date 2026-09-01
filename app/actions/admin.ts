@@ -15,7 +15,21 @@ import {
   type ProductInput,
 } from "@/lib/products";
 import { cleanStr, isNonEmpty } from "@/lib/validation";
+import { prisma } from "@/lib/prisma";
 
+// ===== طلبات "اطلب منتج" =====
+export const PRODUCT_REQUEST_STATUSES = ["new", "contacted", "closed"] as const;
+export type ProductRequestStatus = (typeof PRODUCT_REQUEST_STATUSES)[number];
+
+export async function setProductRequestStatusAction(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const id = cleanStr(formData.get("id"), 40);
+  const status = cleanStr(formData.get("status"), 20);
+  if (!id || !PRODUCT_REQUEST_STATUSES.includes(status as ProductRequestStatus)) return;
+
+  await prisma.productRequest.update({ where: { id }, data: { status } });
+  revalidatePath("/admin/requests");
+}
 // ===== الطلبات =====
 export async function setOrderStatusAction(formData: FormData): Promise<void> {
   await requireAdmin();
