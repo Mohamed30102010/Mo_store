@@ -47,15 +47,9 @@ export default function MobileNav({
         <MenuIcon />
       </button>
 
-      {/*
-        القائمة بتتعرض عن طريق Portal مباشرة جوه <body> بدل ما تفضل جوه الهيدر.
-        السبب: الهيدر عليه خاصية ضبابية (backdrop-blur)، وده بيكسر خاصية "fixed"
-        لأي عنصر جواه (بيخليها تتقيّد بحدود الهيدر بدل الشاشة كلها) — فبتظهر
-        القائمة متراكبة وشفافة مع محتوى الصفحة بدل ما تغطّيه بالكامل.
-      */}
       {mounted &&
         createPortal(
-          <>
+          <div>
             {/* الخلفية المعتمة */}
             <div
               onClick={() => setOpen(false)}
@@ -74,3 +68,58 @@ export default function MobileNav({
             >
               <div className="mb-4 flex items-center justify-between">
                 <span className="code-eyebrow text-sm text-muted">{"// menu"}</span>
+                <button
+                  type="button"
+                  onClick={() => setOpen(false)}
+                  aria-label="إغلاق القائمة"
+                  className="grid h-9 w-9 place-items-center rounded-lg border border-line text-muted transition-colors hover:bg-surface hover:text-fg"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {items.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setOpen(false)}
+                  className="rounded-xl px-3 py-3 font-semibold text-fg transition-colors hover:bg-surface"
+                >
+                  {item.label}
+                </Link>
+              ))}
+
+              {isAdmin && (
+                <Link
+                  href="/admin"
+                  onClick={() => setOpen(false)}
+                  className="mt-2 rounded-xl border border-line bg-surface px-3 py-3 font-semibold text-fg transition-colors hover:bg-surface-2"
+                >
+                  لوحة التحكم
+                </Link>
+              )}
+            </nav>
+          </div>,
+          document.body
+        )}
+    </div>
+  );
+}
+
+function MenuIcon() {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M4 7h16M4 12h16M4 17h16" />
+    </svg>
+  );
+              }
