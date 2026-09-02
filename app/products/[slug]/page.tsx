@@ -138,7 +138,12 @@ export default async function ProductPage({ params }: Params) {
           <h2 className="mb-6 text-xl font-extrabold text-fg">
             منتجات تانية يمكن تعجبك
           </h2>
-          <ProductGrid products={others} rewardPercent={rewardPercent} />
+          <ProductGrid
+            products={others}
+            rewardPercent={rewardPercent}
+            userBalance={userPointsBalance}
+            isLoggedIn={!!user}
+          />
         </section>
       )}
     </div>
