@@ -53,19 +53,21 @@ export default async function SiteHeader() {
           </Link>
           <CartButton />
           <nav className="hidden items-center gap-1 text-sm md:flex">
-            {site.nav.map((item, i) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={
-                  i === 0
-                    ? "rounded-xl border border-line bg-surface px-3 py-2 font-semibold text-fg"
-                    : "rounded-xl px-3 py-2 text-muted transition-colors hover:bg-surface hover:text-fg"
-                }
-              >
-                {item.label}
-              </Link>
-            ))}
+            {site.nav.map((item, i) => {
+  const cls =
+    i === 0
+      ? "rounded-xl border border-line bg-surface px-3 py-2 font-semibold text-fg"
+      : "rounded-xl px-3 py-2 text-muted transition-colors hover:bg-surface hover:text-fg";
+  return item.href.includes("#") ? (
+    <a key={item.href} href={item.href} className={cls}>
+      {item.label}
+    </a>
+  ) : (
+    <Link key={item.href} href={item.href} className={cls}>
+      {item.label}
+    </Link>
+  );
+})}
           </nav>
           <MobileNav items={site.nav} isAdmin={user?.role === "admin"} />
         </div>
