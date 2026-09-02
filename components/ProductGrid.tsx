@@ -4,9 +4,13 @@ import ProductCard from "./ProductCard";
 export default function ProductGrid({
   products,
   rewardPercent,
+  userBalance = 0,
+  isLoggedIn = false,
 }: {
   products: ProductView[];
   rewardPercent?: number;
+  userBalance?: number;
+  isLoggedIn?: boolean;
 }) {
   if (products.length === 0) {
     return (
@@ -19,8 +23,14 @@ export default function ProductGrid({
   return (
     <div className="stagger grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4">
       {products.map((product) => (
-        <ProductCard key={product.id} product={product} rewardPercent={rewardPercent} />
+        <ProductCard
+          key={product.id}
+          product={product}
+          rewardPercent={rewardPercent}
+          userBalance={userBalance}
+          isLoggedIn={isLoggedIn}
+        />
       ))}
     </div>
   );
-}
+          }
