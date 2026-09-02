@@ -129,7 +129,7 @@ export type ProductInput = {
   description: string;
   priceCents: number;
   compareAtCents: number | null;
-  pricePoints: p.pricePoints,
+  pricePoints: number | null;
   type: string;
   images: string[];
   featured: boolean;
@@ -168,6 +168,7 @@ export async function updateProduct(id: string, input: ProductInput) {
     data: { ...input, images: JSON.stringify(input.images) },
   });
 
+  // امسح من Vercel Blob أي صورة قديمة اتشالت من المنتج ده ومش مستخدمة في منتج تاني
   const removed = oldImages.filter((url) => !input.images.includes(url));
   for (const url of removed) {
     if (!(await isImageReferencedElsewhere(url, id))) {
@@ -206,4 +207,4 @@ export async function isSlugTaken(
     select: { id: true },
   });
   return !!row && row.id !== exceptId;
-            }
+}
