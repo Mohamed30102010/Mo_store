@@ -49,6 +49,15 @@ export default function ProductForm({
           required
         />
         <Field
+          label="السعر (نقاط) — اختياري"
+          name="pricePoints"
+          type="number"
+          step="1"
+          min="0"
+          defaultValue={product?.pricePoints != null ? String(product.pricePoints) : ""}
+          placeholder="سيبه فاضي لو المنتج ده مش متاح للشراء بالنقاط"
+        />
+        <Field
           label="السعر قبل الخصم (اختياري)"
           name="compareAt"
           type="number"
@@ -169,6 +178,7 @@ function Field({
   placeholder,
   required,
   step,
+  min,
 }: {
   label: string;
   name: string;
@@ -177,6 +187,7 @@ function Field({
   placeholder?: string;
   required?: boolean;
   step?: string;
+  min?: string;
 }) {
   return (
     <div>
@@ -188,6 +199,7 @@ function Field({
         name={name}
         type={type}
         step={step}
+        min={min}
         defaultValue={defaultValue}
         placeholder={placeholder}
         required={required}
@@ -195,4 +207,4 @@ function Field({
       />
     </div>
   );
-          }
+  }
