@@ -67,6 +67,11 @@ export default function ProductCard({
                 {formatPrice(product.compareAtCents, product.currency)}
               </span>
             )}
+            {product.pricePoints != null && (
+              <span className="tnum mt-0.5 text-xs font-semibold text-brand-300">
+                أو {product.pricePoints} نقطة
+              </span>
+            )}
             {points > 0 && (
               <span className="tnum mt-0.5 text-xs font-medium text-amber-400">
                 🎁 +{points} نقطة
@@ -79,4 +84,4 @@ export default function ProductCard({
       </div>
     </div>
   );
-}
+      }
