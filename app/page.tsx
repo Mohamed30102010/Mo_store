@@ -1,17 +1,19 @@
 import Hero from "@/components/Hero";
 import ProductGrid from "@/components/ProductGrid";
 import { getActiveProducts } from "@/lib/products";
-import { getRewardSettings } from "@/lib/rewards";
+import { getRewardSettings, getPointsBalance } from "@/lib/rewards";
+import { getCurrentUser } from "@/lib/auth";
 
 // نجيب المنتجات من قاعدة البيانات في كل طلب (بيانات حيّة)
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [products, { percent: rewardPercent }] = await Promise.all([
+  const [products, { percent: rewardPercent }, user] = await Promise.all([
     getActiveProducts(),
     getRewardSettings(),
+    getCurrentUser(),
   ]);
-
+  const userPointsBalance = user ? (await getPointsBalance(user.id)).balance : 0;
   return (
     <>
       <Hero />
@@ -83,7 +85,12 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <ProductGrid products={products} rewardPercent={rewardPercent} />
+          <ProductGrid
+            products={products}
+            rewardPercent={rewardPercent}
+            userBalance={userPointsBalance}
+            isLoggedIn={!!user}
+          />
         </div>
       </section>
     </>
