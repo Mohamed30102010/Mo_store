@@ -78,27 +78,16 @@ export default function MobileNav({
                 </button>
               </div>
 
-              {items.map((item) =>
-  item.href.includes("#") ? (
-    <a
-      key={item.href}
-      href={item.href}
-      onClick={() => setOpen(false)}
-      className="rounded-xl px-3 py-3 font-semibold text-fg transition-colors hover:bg-surface"
-    >
-      {item.label}
-    </a>
-  ) : (
-    <Link
-      key={item.href}
-      href={item.href}
-      onClick={() => setOpen(false)}
-      className="rounded-xl px-3 py-3 font-semibold text-fg transition-colors hover:bg-surface"
-    >
-      {item.label}
-    </Link>
-  )
-)}
+              {items.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setOpen(false)}
+                  className="rounded-xl px-3 py-3 font-semibold text-fg transition-colors hover:bg-surface"
+                >
+                  {item.label}
+                </Link>
+              ))}
 
               {isAdmin && (
                 <Link
@@ -133,4 +122,4 @@ function MenuIcon() {
       <path d="M4 7h16M4 12h16M4 17h16" />
     </svg>
   );
-              }
+  }
