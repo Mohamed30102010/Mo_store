@@ -77,36 +77,6 @@ export async function getProductBySlug(
   return row ? toProductView(row) : null;
 }
 
-/**
- * بحث عن المنتجات المتاحة — بيقسّم كلمات البحث ويدوّر على كل كلمة في الاسم أو
- * الوصف المختصر أو الوصف الكامل، بغض النظر عن ترتيبها، وبدون حساسية لحالة الأحرف.
- */
-export async function searchProducts(query: string): Promise<ProductView[]> {
-  const words = query
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 8);
-
-  if (words.length === 0) return [];
-
-  const rows = await prisma.product.findMany({
-    where: {
-      active: true,
-      AND: words.map((word) => ({
-        OR: [
-          { name: { contains: word, mode: "insensitive" as const } },
-          { shortDesc: { contains: word, mode: "insensitive" as const } },
-          { description: { contains: word, mode: "insensitive" as const } },
-        ],
-      })),
-    },
-    orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
-    take: 60,
-  });
-  return rows.map(toProductView);
-}
-
 // ===== أدمن (كل المنتجات بما فيها غير المعروضة) =====
 export async function getAllProductsAdmin(): Promise<ProductView[]> {
   const rows = await prisma.product.findMany({
@@ -129,7 +99,7 @@ export type ProductInput = {
   description: string;
   priceCents: number;
   compareAtCents: number | null;
-  pricePoints: p.pricePoints,
+  pricePoints: number | null;
   type: string;
   images: string[];
   featured: boolean;
@@ -168,6 +138,7 @@ export async function updateProduct(id: string, input: ProductInput) {
     data: { ...input, images: JSON.stringify(input.images) },
   });
 
+  // امسح من Vercel Blob أي صورة قديمة اتشالت من المنتج ده ومش مستخدمة في منتج تاني
   const removed = oldImages.filter((url) => !input.images.includes(url));
   for (const url of removed) {
     if (!(await isImageReferencedElsewhere(url, id))) {
@@ -206,4 +177,4 @@ export async function isSlugTaken(
     select: { id: true },
   });
   return !!row && row.id !== exceptId;
-    }
+  }
