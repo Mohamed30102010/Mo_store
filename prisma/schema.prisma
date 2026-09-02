@@ -20,6 +20,7 @@ model Product {
   description    String   @default("") // الوصف الكامل لصفحة المنتج
   priceCents     Int // السعر بالقروش (لتفادي مشاكل الأرقام العشرية)
   compareAtCents Int? // السعر قبل الخصم (اختياري) لعرض الخصم
+  pricePoints    Int? // سعر الشراء بالنقاط (اختياري) — لو null، المنتج ده مش متاح للشراء بالنقاط
   currency       String   @default("EGP")
   type           String   @default("physical") // "physical" | "digital"
   images         String   @default("[]") // مصفوفة روابط صور بصيغة JSON
