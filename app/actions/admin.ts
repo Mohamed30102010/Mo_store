@@ -87,6 +87,14 @@ async function parseProductForm(
   const compareAtCents = compareRaw ? egpToCents(compareRaw) : null;
   if (compareRaw && compareAtCents === null)
     return { error: "السعر قبل الخصم غير صحيح." };
+  const pricePointsRaw = cleanStr(formData.get("pricePoints"), 20);
+  let pricePoints: number | null = null;
+  if (pricePointsRaw) {
+    const parsed = Math.round(Number(pricePointsRaw));
+    if (!Number.isFinite(parsed) || parsed < 0)
+      return { error: "السعر بالنقاط غير صحيح." };
+    pricePoints = parsed;
+  }
 
   const type = cleanStr(formData.get("type"), 20) === "digital" ? "digital" : "physical";
   const shortDesc = cleanStr(formData.get("shortDesc"), 160) || null;
@@ -135,6 +143,7 @@ async function parseProductForm(
       description,
       priceCents,
       compareAtCents,
+      pricePoints,
       type,
       images: uniqueImages,
       featured,
