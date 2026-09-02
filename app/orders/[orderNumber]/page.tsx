@@ -156,7 +156,11 @@ export default async function OrderPage({ params }: Params) {
           <p className="text-sm text-muted">
             الطريقة:{" "}
             <span className="text-fg">
-              {order.paymentMethod === "cash" ? "كاش عند الاستلام" : "تحويل / محفظة"}
+              {order.paymentMethod === "cash"
+                ? "كاش عند الاستلام"
+                : order.paymentMethod === "points"
+                  ? "نقاط المكافآت 🎁"
+                  : "تحويل / محفظة"}
             </span>
           </p>
           {order.paymentMethod === "transfer" && order.proofImage && (
