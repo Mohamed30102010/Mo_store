@@ -38,7 +38,7 @@ function randomCode(len = 6): string {
   return out;
 }
 
-async function generateOrderNumber(): Promise<string> {
+export async function generateOrderNumber(): Promise<string> {
   for (let attempt = 0; attempt < 6; attempt++) {
     const candidate = `SYX-${randomCode(6)}`;
     const exists = await prisma.order.findUnique({
