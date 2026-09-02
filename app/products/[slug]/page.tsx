@@ -6,7 +6,9 @@ import { formatPrice, discountLabel } from "@/lib/format";
 import ProductGallery from "@/components/ProductGallery";
 import AddToCartButton from "@/components/AddToCartButton";
 import ProductGrid from "@/components/ProductGrid";
-import { getRewardSettings } from "@/lib/rewards";
+import RedeemPointsButton from "@/components/RedeemPointsButton";
+import { getRewardSettings, getPointsBalance } from "@/lib/rewards";
+import { getCurrentUser } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -34,16 +36,18 @@ export default async function ProductPage({ params }: Params) {
 
   const discount = discountLabel(product.priceCents, product.compareAtCents);
   const isDigital = product.type === "digital";
-  const { percent: rewardPercent } = await getRewardSettings();
-  
-  // منتجات تانية (نستبعد الحالي)
+  const [{ percent: rewardPercent }, user] = await Promise.all([
+    getRewardSettings(),
+    getCurrentUser(),
+  ]);
+  const userPointsBalance = user ? (await getPointsBalance(user.id)).balance : 0;
+
   const others = (await getActiveProducts())
     .filter((p) => p.id !== product.id)
     .slice(0, 4);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
-      {/* مسار التنقّل */}
       <nav className="mb-6 flex items-center gap-2 text-sm text-muted">
         <Link href="/" className="hover:text-brand-300">
           الرئيسية
@@ -57,10 +61,8 @@ export default async function ProductPage({ params }: Params) {
       </nav>
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-        {/* الصور */}
         <ProductGallery images={product.images} alt={product.name} />
 
-        {/* المعلومات */}
         <div className="flex flex-col">
           <div className="flex flex-wrap items-center gap-2">
             <span className="rounded-full border border-line bg-surface px-3 py-1 text-xs font-semibold text-brand-300">
@@ -81,7 +83,6 @@ export default async function ProductPage({ params }: Params) {
             <p className="mt-2 text-muted">{product.shortDesc}</p>
           )}
 
-          {/* السعر */}
           <div className="mt-5 flex items-end gap-3">
             <span className="tnum text-3xl font-extrabold text-fg">
               {formatPrice(product.priceCents, product.currency)}
@@ -92,9 +93,13 @@ export default async function ProductPage({ params }: Params) {
               </span>
             )}
           </div>
+          {product.pricePoints != null && (
+            <p className="tnum mt-1.5 flex items-center gap-1.5 text-sm font-semibold text-brand-300">
+              <span aria-hidden="true">🎁</span>
+              أو اشتريه بـ {product.pricePoints} نقطة
+            </p>
+          )}
 
-          
-          {/* ملاحظة التسليم حسب النوع */}
           <p className="mt-3 flex items-center gap-2 text-sm text-muted">
             <span aria-hidden="true">{isDigital ? "⬇️" : "🚚"}</span>
             {isDigital
@@ -104,10 +109,19 @@ export default async function ProductPage({ params }: Params) {
 
           <div className="my-6 h-px bg-line" />
 
-          {/* الإضافة للسلة */}
           <AddToCartButton product={product} variant="full" rewardPercent={rewardPercent} />
 
-          {/* الوصف الكامل */}
+          {product.pricePoints != null && (
+            <div className="mt-4">
+              <RedeemPointsButton
+                productId={product.id}
+                pricePoints={product.pricePoints}
+                userBalance={userPointsBalance}
+                isLoggedIn={!!user}
+              />
+            </div>
+          )}
+
           {product.description && (
             <div className="mt-8">
               <h2 className="mb-2 text-lg font-bold text-fg">تفاصيل المنتج</h2>
@@ -119,7 +133,6 @@ export default async function ProductPage({ params }: Params) {
         </div>
       </div>
 
-      {/* منتجات تانية */}
       {others.length > 0 && (
         <section className="mt-16">
           <h2 className="mb-6 text-xl font-extrabold text-fg">
@@ -130,4 +143,4 @@ export default async function ProductPage({ params }: Params) {
       )}
     </div>
   );
-            }
+          }
