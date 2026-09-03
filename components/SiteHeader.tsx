@@ -5,7 +5,6 @@ import Logo from "./Logo";
 import CartButton from "./CartButton";
 import MobileNav from "./MobileNav";
 import HeaderShell from "./HeaderShell";
-import NavLink from "./NavLink";
 
 export default async function SiteHeader() {
   const user = await getCurrentUser();
@@ -55,7 +54,7 @@ export default async function SiteHeader() {
           <CartButton />
           <nav className="hidden items-center gap-1 text-sm md:flex">
             {site.nav.map((item, i) => (
-              <NavLink
+              <Link
                 key={item.href}
                 href={item.href}
                 className={
@@ -65,7 +64,7 @@ export default async function SiteHeader() {
                 }
               >
                 {item.label}
-              </NavLink>
+              </Link>
             ))}
           </nav>
           <MobileNav items={site.nav} isAdmin={user?.role === "admin"} />
@@ -105,4 +104,4 @@ function SearchIcon() {
       <path d="m21 21-4.3-4.3" />
     </svg>
   );
-                }
+      }
