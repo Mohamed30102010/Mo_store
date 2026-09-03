@@ -143,6 +143,15 @@ export default function ProductForm({
           />
           معروض للبيع
         </label>
+        <label className="flex items-center gap-2 text-sm text-fg">
+          <input
+            type="checkbox"
+            name="searchOnly"
+            defaultChecked={product ? product.searchOnly : false}
+            className="h-4 w-4 accent-brand-600"
+          />
+          يظهر في البحث بس (مش في الرئيسية)
+        </label>
       </div>
 
       {state.error && (
