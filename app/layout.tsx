@@ -8,6 +8,7 @@ import SiteFooter from "@/components/SiteFooter";
 import CartDrawer from "@/components/CartDrawer";
 import TrackingPixels from "@/components/TrackingPixels";
 import { getRewardSettings } from "@/lib/rewards";
+import SiteBackground from "@/components/SiteBackground";
 
 // الليّاوت بيعمل استعلام لقاعدة البيانات (نسبة نقاط المكافآت) — لازم يفضل ديناميكي
 // عشان Next.js متحاولش تجهّزه بشكل ثابت وقت الـ build (لما الداتابيز مش متاحة أصلاً)
@@ -47,6 +48,7 @@ export default async function RootLayout({
   return (
     <html lang="ar" dir="rtl" className={`${cairo.variable} h-full`}>
       <body className="min-h-full flex flex-col bg-bg text-fg antialiased">
+        <SiteBackground />
         {/* أكواد التتبّع (بكسلات) — بتتحقن حسب إعدادات لوحة التحكم */}
         <TrackingPixels />
         <CartProvider>
