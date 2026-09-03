@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import Link from "next/link";
 import NavLink from "./NavLink";
 
 type NavItem = { label: string; href: string };
@@ -16,12 +17,10 @@ export default function MobileNav({
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  // بنستنى الـ mount عشان نعمل createPortal بأمان (document مش موجود وقت الـ SSR)
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // قفل تمرير الصفحة + إغلاق بـ Esc أثناء فتح القائمة
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -50,7 +49,6 @@ export default function MobileNav({
       {mounted &&
         createPortal(
           <div>
-            {/* الخلفية المعتمة */}
             <div
               onClick={() => setOpen(false)}
               aria-hidden="true"
@@ -59,7 +57,6 @@ export default function MobileNav({
               }`}
             />
 
-            {/* لوحة القائمة (تنزلق من اليمين في RTL) */}
             <nav
               aria-label="القائمة الرئيسية"
               className={`fixed inset-y-0 right-0 z-[101] flex w-72 max-w-[85vw] flex-col gap-1 border-l border-line bg-bg p-5 shadow-2xl transition-transform duration-300 ${
@@ -122,4 +119,4 @@ function MenuIcon() {
       <path d="M4 7h16M4 12h16M4 17h16" />
     </svg>
   );
-  }
+              }
