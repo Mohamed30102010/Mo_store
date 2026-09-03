@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import Link from "next/link";
+import NavLink from "./NavLink";
 
 type NavItem = { label: string; href: string };
 
@@ -79,14 +79,14 @@ export default function MobileNav({
               </div>
 
               {items.map((item) => (
-                <Link
+                <NavLink
                   key={item.href}
                   href={item.href}
                   onClick={() => setOpen(false)}
                   className="rounded-xl px-3 py-3 font-semibold text-fg transition-colors hover:bg-surface"
                 >
                   {item.label}
-                </Link>
+                </NavLink>
               ))}
 
               {isAdmin && (
