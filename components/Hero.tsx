@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { site } from "@/lib/site";
 
 export default function Hero() {
@@ -16,7 +17,7 @@ export default function Hero() {
       <div className="relative mx-auto max-w-6xl px-4 py-16 text-center sm:py-24">
         <span className="code-eyebrow animate-fade-in-up inline-flex items-center gap-2 rounded-full border border-line bg-surface px-4 py-1.5 text-sm text-brand-300">
           <span className="text-muted">{"//"}</span>
-          صفر عمولة · تحكّم كامل
+          تجربتك تهمنا · لأن اختياراتك بتبدأ من هنا
           <span className="terminal-cursor" aria-hidden="true" />
         </span>
 
@@ -29,18 +30,18 @@ export default function Hero() {
         </p>
 
         <div className="animate-fade-in-up mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row [animation-delay:220ms]">
-          <a
-            href="#products"
+          <Link
+            href="/#products"
             className="w-full rounded-xl bg-brand-gradient px-8 py-3.5 text-center font-bold text-white shadow-lg shadow-brand-600/30 transition-all hover:-translate-y-0.5 hover:opacity-95 hover:shadow-xl hover:shadow-brand-600/40 sm:w-auto"
           >
             اتفرّج على المنتجات
-          </a>
-          <a
-            href="#why"
+          </Link>
+          <Link
+            href="/#why"
             className="w-full rounded-xl border border-line bg-surface px-8 py-3.5 text-center font-semibold text-fg transition-all hover:-translate-y-0.5 hover:bg-surface-2 sm:w-auto"
           >
             ليه تشتري مننا؟
-          </a>
+          </Link>
         </div>
 
         {/* نقاط ثقة */}
@@ -74,4 +75,4 @@ function TrustPoint({ text }: { text: string }) {
       <span>{text}</span>
     </div>
   );
-      }
+}
