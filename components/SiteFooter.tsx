@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { site } from "@/lib/site";
+import NavLink from "./NavLink";
 
 export default function SiteFooter() {
   const year = 2026; // ثابت لتفادي اختلاف الخادم/العميل — يُحدَّث سنوياً
@@ -23,9 +23,9 @@ export default function SiteFooter() {
               <ul className="space-y-2 text-muted">
                 {site.nav.map((item) => (
                   <li key={item.href}>
-                    <Link href={item.href} className="hover:text-brand-300">
+                    <NavLink href={item.href} className="hover:text-brand-300">
                       {item.label}
-                    </Link>
+                    </NavLink>
                   </li>
                 ))}
               </ul>
