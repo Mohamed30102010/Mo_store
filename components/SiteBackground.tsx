@@ -1,6 +1,6 @@
 // خلفية الموقع المتحركة — عدّل القيمة دي بس لما يبقى عندك الملف/الرابط
 // سيبها فاضية "" عشان الخلفية العادية (بدون حركة) تفضل شغالة
-const BACKGROUND_SRC = "Animate_luxury_logo_reveal_202609040322.mp4";
+const BACKGROUND_SRC = "/background.mp4";
 
 export default function SiteBackground() {
   if (!BACKGROUND_SRC) return null;
