@@ -47,7 +47,7 @@ export default async function RootLayout({
 
   return (
     <html lang="ar" dir="rtl" className={`${cairo.variable} h-full`}>
-      <body className="min-h-full flex flex-col bg-bg text-fg antialiased">
+      <body className="min-h-full flex flex-col text-fg antialiased">
         <SiteBackground />
         {/* أكواد التتبّع (بكسلات) — بتتحقن حسب إعدادات لوحة التحكم */}
         <TrackingPixels />
