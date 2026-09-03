@@ -25,6 +25,7 @@ model Product {
   type           String   @default("physical") // "physical" | "digital"
   images         String   @default("[]") // مصفوفة روابط صور بصيغة JSON
   featured       Boolean  @default(false) // يظهر في قسم "مميز" بصفحة الهبوط
+searchOnly     Boolean  @default(false) // يظهر في نتائج البحث بس، مش في الصفحة الرئيسية
   active         Boolean  @default(true) // معروض للبيع؟
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
