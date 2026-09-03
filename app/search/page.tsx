@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { searchProducts } from "@/lib/products";
-import { getRewardSettings } from "@/lib/rewards";
+import { getRewardSettings, getPointsBalance } from "@/lib/rewards";
+import { getCurrentUser } from "@/lib/auth";
 import ProductGrid from "@/components/ProductGrid";
 import SearchBox from "@/components/SearchBox";
 
@@ -23,10 +24,13 @@ export default async function SearchPage({
   const { q } = await searchParams;
   const query = (q ?? "").trim();
 
-  const [results, { percent: rewardPercent }] = await Promise.all([
+  const [results, { percent: rewardPercent }, user] = await Promise.all([
     query ? searchProducts(query) : Promise.resolve([]),
     getRewardSettings(),
+    getCurrentUser(),
   ]);
+
+  const userBalance = user ? (await getPointsBalance(user.id)).balance : 0;
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
@@ -62,7 +66,12 @@ export default async function SearchPage({
             <span className="tnum font-semibold text-fg">{results.length}</span> نتيجة
             لـ "{query}"
           </p>
-          <ProductGrid products={results} rewardPercent={rewardPercent} />
+          <ProductGrid
+            products={results}
+            rewardPercent={rewardPercent}
+            userBalance={userBalance}
+            isLoggedIn={!!user}
+          />
         </>
       )}
     </div>
