@@ -16,6 +16,7 @@ export type ProductView = {
   type: "physical" | "digital";
   images: string[];
   featured: boolean;
+  searchOnly: boolean;
   active: boolean;
 };
 
@@ -34,6 +35,7 @@ export function toProductView(p: Product): ProductView {
     type: p.type === "digital" ? "digital" : "physical",
     images: parseImagesJson(p.images),
     featured: p.featured,
+    searchOnly: p.searchOnly,
     active: p.active,
   };
 }
@@ -51,11 +53,11 @@ function parseImagesJson(raw: string): string[] {
 /** كل المنتجات المتاحة للبيع (الأحدث أولاً) */
 export async function getActiveProducts(): Promise<ProductView[]> {
   const rows = await prisma.product.findMany({
-    where: { active: true },
+    where: { active: true, searchOnly: false },
     orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
   });
   return rows.map(toProductView);
-}
+      }
 
 /** المنتجات المميزة لصفحة الهبوط */
 export async function getFeaturedProducts(limit = 6): Promise<ProductView[]> {
@@ -133,6 +135,7 @@ export type ProductInput = {
   type: string;
   images: string[];
   featured: boolean;
+  searchOnly: boolean;
   active: boolean;
 };
 
