@@ -101,6 +101,7 @@ async function parseProductForm(
   const description = cleanStr(formData.get("description"), 4000);
   const featured = formData.get("featured") === "on";
   const active = formData.get("active") === "on";
+  const searchOnly = formData.get("searchOnly") === "on";
 
   // الصور: رابط لكل سطر + صورة مرفوعة (اختياري)
   const urls = cleanStr(formData.get("imageUrls"), 4000)
@@ -148,6 +149,7 @@ async function parseProductForm(
       images: uniqueImages,
       featured,
       active,
+      searchOnly,
     },
     uploadedImageUrl,
   };
