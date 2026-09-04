@@ -42,7 +42,7 @@ export default async function HomePage() {
       </section>
 
       {/* نقاط المكافآت */}
-      {rewardPercent > 0 && (
+      {rewardPercent > 0 && !user && (
         <section className="border-b border-line bg-brand-600/10">
           <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-8">
             <div>
@@ -115,4 +115,4 @@ function Feature({
       <p className="mt-2 text-sm leading-6 text-muted">{desc}</p>
     </div>
   );
-}
+            }
