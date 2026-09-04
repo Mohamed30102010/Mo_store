@@ -1,5 +1,6 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
+import { createNotification } from "@/lib/notifications";
 
 export const REVIEW_STATUSES = ["pending", "approved", "rejected"] as const;
 export type ReviewStatus = (typeof REVIEW_STATUSES)[number];
@@ -31,7 +32,17 @@ export async function createReview(
   rating: number,
   comment: string
 ) {
-  return prisma.review.create({
+  const review = await prisma.review.create({
     data: { userId, rating, comment, status: "pending" },
+    include: { user: { select: { name: true } } },
   });
-  }
+
+  await createNotification(
+    "review",
+    "رأي جديد ⭐",
+    `${review.user.name} كتب رأي جديد (${rating} نجوم) بانتظار المراجعة.`,
+    "/admin/reviews"
+  );
+
+  return review;
+}
