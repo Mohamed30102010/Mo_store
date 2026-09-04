@@ -1,7 +1,7 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
+import { createNotification } from "@/lib/notifications";
 
-// ===== حالات الطلب =====
 export const ORDER_STATUSES = [
   "pending",
   "confirmed",
@@ -16,22 +16,19 @@ export const STATUS_LABELS: Record<OrderStatus, string> = {
   confirmed: "مؤكّد",
   delivered: "تم التسليم",
   cancelled: "ملغي",
-  returned: "مرتجع", // العميل رجّع الطلب وفق سياسة الاسترجاع (/policy)
+  returned: "مرتجع",
 };
 
-// خطوات التقدّم المعروضة في خط الزمن
 export const STATUS_FLOW: OrderStatus[] = ["pending", "confirmed", "delivered"];
 
 export function statusLabel(status: string): string {
   return STATUS_LABELS[status as OrderStatus] ?? status;
 }
 
-// ===== توليد رقم طلب مقروء وفريد =====
-const ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // بدون أحرف ملتبسة
+const ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
 function randomCode(len = 6): string {
   let out = "";
-  // نستخدم Math.random هنا (مش أمان تشفيري، بس كافي لرقم طلب) — يعمل على الخادم
   for (let i = 0; i < len; i++) {
     out += ALPHABET[Math.floor(Math.random() * ALPHABET.length)];
   }
@@ -47,11 +44,9 @@ export async function generateOrderNumber(): Promise<string> {
     });
     if (!exists) return candidate;
   }
-  // احتياطي شبه مستحيل يتكرر
   return `SYX-${randomCode(9)}`;
 }
 
-// ===== إنشاء طلب =====
 export type NewOrderItem = {
   productId: string | null;
   name: string;
@@ -69,7 +64,7 @@ export type NewOrderInput = {
   paymentMethod: "cash" | "transfer";
   proofImage: string | null;
   note: string | null;
-  shippingCents: number; // تكلفة الشحن المحسوبة (صفر للرقمي بالكامل)
+  shippingCents: number;
   items: NewOrderItem[];
 };
 
@@ -80,7 +75,7 @@ export async function createOrder(input: NewOrderInput) {
   );
   const orderNumber = await generateOrderNumber();
 
-  return prisma.order.create({
+  const order = await prisma.order.create({
     data: {
       orderNumber,
       userId: input.userId,
@@ -107,9 +102,17 @@ export async function createOrder(input: NewOrderInput) {
     },
     include: { items: true },
   });
+
+  await createNotification(
+    "order",
+    "طلب جديد 🧾",
+    `طلب جديد من ${input.customerName} — رقم الطلب ${order.orderNumber}`,
+    `/admin/orders/${order.id}`
+  );
+
+  return order;
 }
 
-// ===== قراءة =====
 export async function getOrderByNumber(orderNumber: string) {
   return prisma.order.findUnique({
     where: { orderNumber: orderNumber.trim().toUpperCase() },
@@ -125,7 +128,6 @@ export async function getUserOrders(userId: string) {
   });
 }
 
-// ===== أدمن =====
 export async function getAllOrders(status?: string) {
   return prisma.order.findMany({
     where: status && ORDER_STATUSES.includes(status as OrderStatus)
@@ -147,7 +149,6 @@ export async function updateOrderStatus(id: string, status: OrderStatus) {
   return prisma.order.update({ where: { id }, data: { status } });
 }
 
-/** إحصائيات للوحة التحكم */
 export async function getStats() {
   const [orders, products, users] = await Promise.all([
     prisma.order.findMany({
@@ -158,11 +159,10 @@ export async function getStats() {
   ]);
 
   const byStatus: Record<string, number> = {};
-  let revenueCents = 0; // إيراد الطلبات المؤكّدة/المسلّمة (المرتجع والملغي مش محسوبين)
+  let revenueCents = 0;
   for (const o of orders) {
     byStatus[o.status] = (byStatus[o.status] ?? 0) + 1;
     if (o.status === "confirmed" || o.status === "delivered") {
-      // totalCents (شامل الشحن) — fallback للطلبات القديمة اللي اتعملت قبل عمود الإجمالي
       revenueCents += o.totalCents || o.subtotalCents;
     }
   }
@@ -178,4 +178,4 @@ export async function getStats() {
     cancelled: byStatus["cancelled"] ?? 0,
     returned: byStatus["returned"] ?? 0,
   };
-}
+      }
