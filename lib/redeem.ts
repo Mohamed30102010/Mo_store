@@ -1,11 +1,8 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
 import { generateOrderNumber } from "@/lib/orders";
+import { createNotification } from "@/lib/notifications";
 
-/**
- * شراء منتج بالكامل بالنقاط (بدون فلوس) — بيخصم النقاط وينشئ الطلب في عملية واحدة
- * ذرّية (atomic) عشان نمنع أي سباق (race) لو العميل ضغط الزرار أكتر من مرة بسرعة.
- */
 export async function redeemProductWithPoints(
   userId: string,
   productId: string,
@@ -17,7 +14,7 @@ export async function redeemProductWithPoints(
 
   const orderNumber = await generateOrderNumber();
 
-  return prisma.$transaction(async (tx) => {
+  const order = await prisma.$transaction(async (tx) => {
     const account = await tx.pointsAccount.findUnique({ where: { userId } });
     if (!account || account.balance < product.pricePoints!) {
       throw new Error("رصيد نقاطك مش كافي لشراء المنتج ده.");
@@ -72,4 +69,13 @@ export async function redeemProductWithPoints(
 
     return order;
   });
-}
+
+  await createNotification(
+    "redeem",
+    "شراء بالنقاط 🎁",
+    `${customer.name} اشترى ${product.name} بالنقاط — رقم الطلب ${order.orderNumber}`,
+    `/admin/orders/${order.id}`
+  );
+
+  return order;
+        }
