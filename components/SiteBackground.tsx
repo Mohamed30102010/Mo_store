@@ -1,4 +1,4 @@
-const BACKGROUND_SRC = "/background.mp4"; // أو أي مسار حطيته
+const BACKGROUND_SRC = "/Animate_this_logo_into_a_202609040341.mp4"; // أو أي مسار حطيته
 
 export default function SiteBackground() {
   if (!BACKGROUND_SRC) return null;
