@@ -18,6 +18,7 @@ import { cleanStr, isNonEmpty } from "@/lib/validation";
 import { prisma } from "@/lib/prisma";
 import { PRODUCT_REQUEST_STATUSES, type ProductRequestStatus } from "@/lib/product-requests";
 import { REVIEW_STATUSES, type ReviewStatus } from "@/lib/reviews";
+import { markNotificationRead, markAllNotificationsRead } from "@/lib/notifications";
 
 // ===== طلبات "اطلب منتج" =====
 export async function setProductRequestStatusAction(formData: FormData): Promise<void> {
@@ -250,4 +251,21 @@ export async function setReviewStatusAction(formData: FormData): Promise<void> {
   revalidatePath("/admin/reviews");
   revalidatePath("/reviews");
   revalidatePath("/");
+}
+// ===== الإشعارات =====
+export async function markNotificationReadAction(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const id = cleanStr(formData.get("id"), 40);
+  const link = cleanStr(formData.get("link"), 200);
+  if (id) await markNotificationRead(id);
+  revalidatePath("/admin/notifications");
+  revalidatePath("/admin");
+  if (link) redirect(link);
+}
+
+export async function markAllNotificationsReadAction(): Promise<void> {
+  await requireAdmin();
+  await markAllNotificationsRead();
+  revalidatePath("/admin/notifications");
+  revalidatePath("/admin");
 }
