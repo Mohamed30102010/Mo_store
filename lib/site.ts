@@ -8,7 +8,7 @@ export const site = {
   // روابط تُستخدم لاحقاً في الهيدر/الفوتر
   nav: [
     { label: "الصفحة الرئيسية", href: "/" },
-    { label: "منتجاتنا", href: "/#products" },
+    { label: "منتجاتنا", href: "/" },
     { label: "اطلب منتج", href: "/request" },
     { label: "تتبّع طلب", href: "/track" },
     { label: "آراء العملاء", href: "/reviews" },
