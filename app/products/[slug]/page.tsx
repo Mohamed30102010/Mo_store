@@ -2,11 +2,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getProductBySlug, getActiveProducts } from "@/lib/products";
-import { formatPrice, discountLabel } from "@/lib/format";
+import { discountLabel } from "@/lib/format";
 import ProductGallery from "@/components/ProductGallery";
-import AddToCartButton from "@/components/AddToCartButton";
 import ProductGrid from "@/components/ProductGrid";
-import RedeemPointsButton from "@/components/RedeemPointsButton";
+import ProductPurchasePanel from "@/components/ProductPurchasePanel";
 import { getRewardSettings, getPointsBalance } from "@/lib/rewards";
 import { getCurrentUser } from "@/lib/auth";
 
@@ -83,44 +82,13 @@ export default async function ProductPage({ params }: Params) {
             <p className="mt-2 text-muted">{product.shortDesc}</p>
           )}
 
-          <div className="mt-5 flex items-end gap-3">
-            <span className="tnum text-3xl font-extrabold text-fg">
-              {formatPrice(product.priceCents, product.currency)}
-            </span>
-            {product.compareAtCents && (
-              <span className="tnum pb-1 text-lg text-muted line-through">
-                {formatPrice(product.compareAtCents, product.currency)}
-              </span>
-            )}
-          </div>
-          {product.pricePoints != null && (
-            <p className="tnum mt-1.5 flex items-center gap-1.5 text-sm font-semibold text-brand-300">
-              <span aria-hidden="true">🎁</span>
-              أو اشتريه بـ {product.pricePoints} نقطة
-            </p>
-          )}
-
-          <p className="mt-3 flex items-center gap-2 text-sm text-muted">
-            <span aria-hidden="true">{isDigital ? "⬇️" : "🚚"}</span>
-            {isDigital
-              ? "تحميل فوري بعد تأكيد الطلب."
-              : "شحن للعنوان اللي هتدخّله وقت الطلب."}
-          </p>
-
-          <div className="my-6 h-px bg-line" />
-
-          <AddToCartButton product={product} variant="full" rewardPercent={rewardPercent} />
-
-          {product.pricePoints != null && (
-            <div className="mt-4">
-              <RedeemPointsButton
-                productId={product.id}
-                pricePoints={product.pricePoints}
-                userBalance={userPointsBalance}
-                isLoggedIn={!!user}
-              />
-            </div>
-          )}
+          <ProductPurchasePanel
+            product={product}
+            rewardPercent={rewardPercent}
+            userPointsBalance={userPointsBalance}
+            isLoggedIn={!!user}
+            isDigital={isDigital}
+          />
 
           {product.description && (
             <div className="mt-8">
@@ -148,4 +116,4 @@ export default async function ProductPage({ params }: Params) {
       )}
     </div>
   );
-          }
+      }
