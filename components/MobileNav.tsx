@@ -9,19 +9,19 @@ type NavItem = { label: string; href: string };
 export default function MobileNav({
   items,
   isAdmin,
+  hasUnreadNotifications = false,
 }: {
   items: readonly NavItem[];
   isAdmin: boolean;
+  hasUnreadNotifications?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  // بنستنى الـ mount عشان نعمل createPortal بأمان (document مش موجود وقت الـ SSR)
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // قفل تمرير الصفحة + إغلاق بـ Esc أثناء فتح القائمة
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -42,15 +42,20 @@ export default function MobileNav({
         onClick={() => setOpen(true)}
         aria-label="فتح القائمة"
         aria-expanded={open}
-        className="grid h-10 w-10 place-items-center rounded-xl border border-line bg-surface text-fg transition-colors hover:bg-surface-2"
+        className="relative grid h-10 w-10 place-items-center rounded-xl border border-line bg-surface text-fg transition-colors hover:bg-surface-2"
       >
         <MenuIcon />
+        {hasUnreadNotifications && (
+          <span
+            className="absolute -left-1 -top-1 h-3 w-3 rounded-full bg-red-500 ring-2 ring-bg"
+            aria-hidden="true"
+          />
+        )}
       </button>
 
       {mounted &&
         createPortal(
           <div>
-            {/* الخلفية المعتمة */}
             <div
               onClick={() => setOpen(false)}
               aria-hidden="true"
@@ -59,7 +64,6 @@ export default function MobileNav({
               }`}
             />
 
-            {/* لوحة القائمة (تنزلق من اليمين في RTL) */}
             <nav
               aria-label="القائمة الرئيسية"
               className={`fixed inset-y-0 right-0 z-[101] flex w-72 max-w-[85vw] flex-col gap-1 border-l border-line bg-bg p-5 shadow-2xl transition-transform duration-300 ${
@@ -93,9 +97,12 @@ export default function MobileNav({
                 <Link
                   href="/admin"
                   onClick={() => setOpen(false)}
-                  className="mt-2 rounded-xl border border-line bg-surface px-3 py-3 font-semibold text-fg transition-colors hover:bg-surface-2"
+                  className="mt-2 flex items-center justify-between rounded-xl border border-line bg-surface px-3 py-3 font-semibold text-fg transition-colors hover:bg-surface-2"
                 >
-                  لوحة التحكم
+                  <span>لوحة التحكم</span>
+                  {hasUnreadNotifications && (
+                    <span className="h-2.5 w-2.5 rounded-full bg-red-500" aria-hidden="true" />
+                  )}
                 </Link>
               )}
             </nav>
@@ -122,4 +129,4 @@ function MenuIcon() {
       <path d="M4 7h16M4 12h16M4 17h16" />
     </svg>
   );
-      }
+}
