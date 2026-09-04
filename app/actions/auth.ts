@@ -8,17 +8,15 @@ import {
   createSession,
   destroySession,
 } from "@/lib/auth";
+import { createNotification } from "@/lib/notifications";
 import { isValidEmail, isValidPhone, cleanStr } from "@/lib/validation";
 
 export type AuthState = { error?: string };
 
-// بيانات الأدمن الافتراضية — قابلة للتغيير عبر متغيرات البيئة ADMIN_EMAIL/ADMIN_PASSWORD.
-// لو حد سجّل دخول بيهم تحديدًا ومفيش حساب بالإيميل ده لسه، بننشئه تلقائيًا (من أي جهاز).
 const DEFAULT_ADMIN_EMAIL = (process.env.ADMIN_EMAIL || "admin@syntax.eg").toLowerCase();
 const DEFAULT_ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "Admin@12345";
 
 function safeRedirect(target: string): string {
-  // نسمح فقط بمسارات داخلية (نتفادى open redirect)
   return target.startsWith("/") && !target.startsWith("//") ? target : "/account";
 }
 
@@ -53,6 +51,13 @@ export async function registerAction(
     },
   });
 
+  await createNotification(
+    "signup",
+    "عميل جديد 👤",
+    `${user.name} عمل حساب جديد بالإيميل ${user.email}`,
+    "/admin/users"
+  );
+
   await createSession(user.id);
   redirect(redirectTo);
 }
@@ -70,7 +75,6 @@ export async function loginAction(
   if (!isValidEmail(email) || !password)
     return { error: "ادخل إيميل وكلمة سر صحيحين." };
 
-  // تسجيل دخول ببيانات الأدمن الافتراضية ومفيش حساب بالإيميل ده لسه → ينشأ تلقائيًا الآن
   if (email === DEFAULT_ADMIN_EMAIL && password === DEFAULT_ADMIN_PASSWORD) {
     const existingAdmin = await prisma.user.findUnique({ where: { email } });
     if (!existingAdmin) {
@@ -88,7 +92,6 @@ export async function loginAction(
   }
 
   const user = await prisma.user.findUnique({ where: { email } });
-  // نفس رسالة الخطأ في الحالتين (ما نكشفش إذا الإيميل موجود)
   if (!user || !(await verifyPassword(password, user.passwordHash))) {
     return { error: "الإيميل أو كلمة السر غير صحيحة." };
   }
@@ -100,4 +103,4 @@ export async function loginAction(
 export async function logoutAction(): Promise<void> {
   await destroySession();
   redirect("/");
-    }
+  }
