@@ -13,6 +13,7 @@ const links = [
   { href: "/admin/users", label: "العملاء", icon: "👥" },
   { href: "/admin/rewards", label: "نقاط المكافآت", icon: "🎁" },
   { href: "/admin/requests", label: "طلبات المنتجات", icon: "📩" },
+  { href: "/admin/reviews", label: "آراء العملاء", icon: "⭐" },
   { href: "/admin/settings", label: "الإعدادات", icon: "⚙️" },
 ];
 
@@ -71,4 +72,4 @@ export default async function AdminLayout({
       </div>
     </div>
   );
-}
+      }
