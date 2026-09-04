@@ -1,4 +1,6 @@
-const BACKGROUND_SRC = "/animate_this_logo_into_a_202609040341.mp4"; // أو أي مسار حطيته
+// خلفية الموقع المتحركة — عدّل القيمة دي بس لما يبقى عندك الملف/الرابط
+// سيبها فاضية "" عشان الخلفية العادية (بدون حركة) تفضل شغالة
+const BACKGROUND_SRC = "https://drive.google.com/file/d/1OFQ25ATiPaIWp-lfTXAlWAMhHcCpIe70/view?usp=drivesdk";
 
 export default function SiteBackground() {
   if (!BACKGROUND_SRC) return null;
@@ -14,17 +16,18 @@ export default function SiteBackground() {
           loop
           muted
           playsInline
-          className="h-full w-full object-cover opacity-60"
+          className="h-full w-full object-cover opacity-40"
         />
       ) : (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={BACKGROUND_SRC}
           alt=""
-          className="h-full w-full object-cover opacity-60"
+          className="h-full w-full object-cover opacity-40"
         />
       )}
-      <div className="absolute inset-0 bg-bg/50" />
+      {/* طبقة سودة شفافة فوق الخلفية عشان النصوص تفضل واضحة */}
+      <div className="absolute inset-0 bg-bg/70" />
     </div>
   );
-}
+      }
