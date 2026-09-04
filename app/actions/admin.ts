@@ -17,6 +17,7 @@ import {
 import { cleanStr, isNonEmpty } from "@/lib/validation";
 import { prisma } from "@/lib/prisma";
 import { PRODUCT_REQUEST_STATUSES, type ProductRequestStatus } from "@/lib/product-requests";
+import { REVIEW_STATUSES, type ReviewStatus } from "@/lib/reviews";
 
 // ===== طلبات "اطلب منتج" =====
 export async function setProductRequestStatusAction(formData: FormData): Promise<void> {
@@ -238,3 +239,15 @@ export async function adjustPointsAction(
   revalidatePath("/admin/rewards");
   return { ok: true };
                                 }
+// ===== آراء العملاء =====
+export async function setReviewStatusAction(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const id = cleanStr(formData.get("id"), 40);
+  const status = cleanStr(formData.get("status"), 20);
+  if (!id || !REVIEW_STATUSES.includes(status as ReviewStatus)) return;
+
+  await prisma.review.update({ where: { id }, data: { status } });
+  revalidatePath("/admin/reviews");
+  revalidatePath("/reviews");
+  revalidatePath("/");
+}
