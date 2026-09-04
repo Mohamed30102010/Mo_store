@@ -9,6 +9,8 @@ type Props = {
   product: ProductView;
   variant?: "card" | "full";
   rewardPercent?: number;
+  qty?: number;
+  onQtyChange?: (qty: number) => void;
 };
 
 // نبني عنصر السلة من المنتج
@@ -24,10 +26,19 @@ function toCartItem(p: ProductView): Omit<CartItem, "qty"> {
   };
 }
 
-export default function AddToCartButton({ product, variant = "card", rewardPercent = 0 }: Props) {
+export default function AddToCartButton({
+  product,
+  variant = "card",
+  rewardPercent = 0,
+  qty: controlledQty,
+  onQtyChange,
+}: Props) {
   const { add } = useCart();
-  const [qty, setQty] = useState(1);
+  const [internalQty, setInternalQty] = useState(1);
   const [justAdded, setJustAdded] = useState(false);
+
+  const qty = controlledQty ?? internalQty;
+  const setQty = onQtyChange ?? setInternalQty;
 
   function handleAdd() {
     add(toCartItem(product), variant === "full" ? qty : 1);
@@ -60,7 +71,7 @@ export default function AddToCartButton({ product, variant = "card", rewardPerce
         <div className="flex items-center rounded-xl border border-line bg-surface">
           <button
             type="button"
-            onClick={() => setQty((q) => Math.max(1, q - 1))}
+            onClick={() => setQty(Math.max(1, qty - 1))}
             disabled={qty <= 1}
             className="grid h-10 w-10 place-items-center rounded-xl text-lg font-bold text-fg transition-colors hover:bg-surface-2 disabled:text-muted/40 disabled:hover:bg-transparent"
             aria-label="نقص الكمية"
@@ -70,7 +81,7 @@ export default function AddToCartButton({ product, variant = "card", rewardPerce
           <span className="tnum w-10 text-center font-bold text-fg">{qty}</span>
           <button
             type="button"
-            onClick={() => setQty((q) => q + 1)}
+            onClick={() => setQty(qty + 1)}
             className="grid h-10 w-10 place-items-center rounded-xl text-lg font-bold text-fg transition-colors hover:bg-surface-2"
             aria-label="زود الكمية"
           >
@@ -106,4 +117,4 @@ export default function AddToCartButton({ product, variant = "card", rewardPerce
       )}
     </div>
   );
-    }
+                                        }
