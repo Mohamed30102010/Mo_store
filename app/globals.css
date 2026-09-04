@@ -31,13 +31,11 @@
 
 html {
   scroll-behavior: smooth;
-  background: var(--color-bg);
   color-scheme: dark;
   overflow-x: hidden;
 }
 
 body {
-  background: var(--color-bg);
   color: var(--color-fg);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
