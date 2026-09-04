@@ -1,18 +1,24 @@
+import Link from "next/link";
 import Hero from "@/components/Hero";
 import ProductGrid from "@/components/ProductGrid";
+import ReviewsList from "@/components/ReviewsList";
 import { getActiveProducts } from "@/lib/products";
 import { getRewardSettings, getPointsBalance } from "@/lib/rewards";
 import { getCurrentUser } from "@/lib/auth";
+import { getApprovedReviews, getApprovedReviewsCount } from "@/lib/reviews";
 
 // نجيب المنتجات من قاعدة البيانات في كل طلب (بيانات حيّة)
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [products, { percent: rewardPercent }, user] = await Promise.all([
-    getActiveProducts(),
-    getRewardSettings(),
-    getCurrentUser(),
-  ]);
+  const [products, { percent: rewardPercent }, user, previewReviews, totalReviews] =
+    await Promise.all([
+      getActiveProducts(),
+      getRewardSettings(),
+      getCurrentUser(),
+      getApprovedReviews(3),
+      getApprovedReviewsCount(),
+    ]);
   const userPointsBalance = user ? (await getPointsBalance(user.id)).balance : 0;
   return (
     <>
@@ -93,6 +99,33 @@ export default async function HomePage() {
           />
         </div>
       </section>
+
+      {/* آراء العملاء */}
+      {previewReviews.length > 0 && (
+        <section id="reviews-preview" className="border-t border-line bg-surface/40">
+          <div className="mx-auto max-w-3xl px-4 py-16">
+            <div className="mb-8 text-center">
+              <h2 className="flex items-center justify-center gap-2 text-2xl font-extrabold text-fg sm:text-3xl">
+                <span aria-hidden="true">⭐</span> آراء العملاء
+              </h2>
+              <p className="mt-1 text-muted">إيه رأي اللي جرّبوا المتجر قبلك.</p>
+            </div>
+
+            <ReviewsList reviews={previewReviews} />
+
+            {totalReviews > 3 && (
+              <div className="mt-8 text-center">
+                <Link
+                  href="/reviews"
+                  className="inline-block rounded-xl border border-brand-600/50 bg-bg px-5 py-2.5 text-sm font-semibold text-brand-300 transition-colors hover:bg-surface-2"
+                >
+                  قراءة المزيد
+                </Link>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
     </>
   );
 }
@@ -107,7 +140,7 @@ function Feature({
   icon: string;
 }) {
   return (
-    <div className="rounded-2xl border border-line bg-surface p-6 transition-colors hover:border-brand-600/50">
+    <div className="rounded-2xl border border-line bg-surface/50 p-6 transition-colors hover:border-brand-600/50">
       <div className="grid h-12 w-12 place-items-center rounded-xl border border-line bg-surface-2 text-2xl">
         {icon}
       </div>
@@ -115,4 +148,4 @@ function Feature({
       <p className="mt-2 text-sm leading-6 text-muted">{desc}</p>
     </div>
   );
-            }
+}
