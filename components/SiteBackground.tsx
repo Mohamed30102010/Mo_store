@@ -1,4 +1,4 @@
-const BACKGROUND_SRC = "/bme9bu3l.jpeg"; // أو أي مسار حطيته
+const BACKGROUND_SRC = "/Create_luxury_store_logo_animation_202609041413.mp4"; // أو أي مسار حطيته
 
 export default function SiteBackground() {
   if (!BACKGROUND_SRC) return null;
