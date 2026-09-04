@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { site } from "@/lib/site";
 import { getCurrentUser } from "@/lib/auth";
+import { getUnreadNotificationsCount } from "@/lib/notifications";
 import Logo from "./Logo";
 import CartButton from "./CartButton";
 import MobileNav from "./MobileNav";
@@ -8,11 +9,12 @@ import HeaderShell from "./HeaderShell";
 
 export default async function SiteHeader() {
   const user = await getCurrentUser();
+  const hasUnreadNotifications =
+    user?.role === "admin" ? (await getUnreadNotificationsCount()) > 0 : false;
 
   return (
     <HeaderShell>
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4">
-        {/* أزرار اليمين (في RTL): الحساب + لوحة التحكم للأدمن */}
         <div className="flex items-center gap-2">
           {user ? (
             <Link
@@ -42,7 +44,6 @@ export default async function SiteHeader() {
           )}
         </div>
 
-        {/* روابط الوسط + البحث + السلة + قائمة الموبايل */}
         <div className="flex items-center gap-2">
           <Link
             href="/search"
@@ -67,10 +68,13 @@ export default async function SiteHeader() {
               </Link>
             ))}
           </nav>
-          <MobileNav items={site.nav} isAdmin={user?.role === "admin"} />
+          <MobileNav
+            items={site.nav}
+            isAdmin={user?.role === "admin"}
+            hasUnreadNotifications={hasUnreadNotifications}
+          />
         </div>
 
-        {/* اللوجو (يسار في RTL) */}
         <Logo />
       </div>
     </HeaderShell>
@@ -104,4 +108,4 @@ function SearchIcon() {
       <path d="m21 21-4.3-4.3" />
     </svg>
   );
-      }
+}
