@@ -2,6 +2,7 @@
 
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { createNotification } from "@/lib/notifications";
 import { isValidEmail, isValidPhone, isNonEmpty, cleanStr } from "@/lib/validation";
 
 export type RequestFormState = { error?: string; ok?: boolean };
@@ -32,5 +33,12 @@ export async function submitProductRequestAction(
     },
   });
 
+  await createNotification(
+    "product_request",
+    "طلب منتج جديد 📩",
+    `${name} طلب منتج: ${message.slice(0, 80)}`,
+    "/admin/requests"
+  );
+
   return { ok: true };
-  }
+    }
