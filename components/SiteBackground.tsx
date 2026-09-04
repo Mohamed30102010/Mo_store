@@ -1,4 +1,4 @@
-const BACKGROUND_SRC = "https://drive.google.com/file/d/1OFQ25ATiPaIWp-lfTXAlWAMhHcCpIe70/view?usp=drivesdk"; // أو أي مسار حطيته
+const BACKGROUND_SRC = "/background.mp4"; // أو أي مسار حطيته
 
 export default function SiteBackground() {
   if (!BACKGROUND_SRC) return null;
