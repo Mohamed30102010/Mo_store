@@ -1,6 +1,4 @@
-// خلفية الموقع المتحركة — عدّل القيمة دي بس لما يبقى عندك الملف/الرابط
-// سيبها فاضية "" عشان الخلفية العادية (بدون حركة) تفضل شغالة
-const BACKGROUND_SRC = "/background.mp4";
+const BACKGROUND_SRC = "/background.mp4"; // أو أي مسار حطيته
 
 export default function SiteBackground() {
   if (!BACKGROUND_SRC) return null;
@@ -16,18 +14,17 @@ export default function SiteBackground() {
           loop
           muted
           playsInline
-          className="h-full w-full object-cover opacity-40"
+          className="h-full w-full object-cover opacity-60"
         />
       ) : (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={BACKGROUND_SRC}
           alt=""
-          className="h-full w-full object-cover opacity-40"
+          className="h-full w-full object-cover opacity-60"
         />
       )}
-      {/* طبقة سودة شفافة فوق الخلفية عشان النصوص تفضل واضحة */}
-      <div className="absolute inset-0 bg-bg/70" />
+      <div className="absolute inset-0 bg-bg/50" />
     </div>
   );
-      }
+}
