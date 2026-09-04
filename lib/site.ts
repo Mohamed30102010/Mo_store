@@ -11,6 +11,7 @@ export const site = {
     { label: "منتجاتنا", href: "/#products" },
     { label: "اطلب منتج", href: "/request" },
     { label: "تتبّع طلب", href: "/track" },
+    { label: "آراء العملاء", href: "/reviews" },
     { label: "الشحن والاسترجاع", href: "/policy" },
     { label: "تواصل", href: "/#contact" },
   ],
