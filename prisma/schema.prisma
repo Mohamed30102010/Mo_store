@@ -160,3 +160,16 @@ model Review {
   @@index([userId])
   @@index([status])
 }
+/// إشعار للأدمن — أي نشاط من العميل (طلب، رأي، تسجيل، إلخ)
+model Notification {
+  id        String   @id @default(cuid())
+  type      String // "order" | "review" | "product_request" | "redeem" | "signup"
+  title     String
+  message   String
+  link      String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([read])
+  @@index([createdAt])
+}
