@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import {
   createAnnouncementAction,
   updateAnnouncementAction,
@@ -19,14 +19,30 @@ function toLocalInputValue(date: Date): string {
 export default function AnnouncementForm({
   editing,
 }: {
-  editing?: { id: string; message: string; publishedAt: Date };
+  editing?: { id: string; message: string; publishedAt: string }; // ISO string
 }) {
   const action = editing ? updateAnnouncementAction : createAnnouncementAction;
   const [state, formAction, isPending] = useActionState(action, initial);
 
+  const [localValue, setLocalValue] = useState("");
+
+  // بنحسب الوقت المحلي جوه المتصفح نفسه بعد التحميل، عشان نضمن استخدام
+  // توقيت جهاز الأدمن الفعلي مش توقيت السيرفر (اللي بيسبب فرق الساعات)
+  useEffect(() => {
+    const initialDate = editing?.publishedAt ? new Date(editing.publishedAt) : new Date();
+    setLocalValue(toLocalInputValue(initialDate));
+  }, [editing?.publishedAt]);
+
+  const isoValue = (() => {
+    if (!localValue) return "";
+    const d = new Date(localValue);
+    return isNaN(d.getTime()) ? "" : d.toISOString();
+  })();
+
   return (
     <form action={formAction} className="rounded-2xl border border-line bg-surface p-5">
       {editing && <input type="hidden" name="id" value={editing.id} />}
+      <input type="hidden" name="publishedAt" value={isoValue} />
 
       <label className="mb-1 block text-sm font-semibold text-fg">نص التنبيه</label>
       <textarea
@@ -43,8 +59,8 @@ export default function AnnouncementForm({
       <label className="mb-1 mt-4 block text-sm font-semibold text-fg">وقت التنبيه</label>
       <input
         type="datetime-local"
-        name="publishedAt"
-        defaultValue={toLocalInputValue(editing?.publishedAt ?? new Date())}
+        value={localValue}
+        onChange={(e) => setLocalValue(e.target.value)}
         className="tnum w-full rounded-xl border border-line bg-bg p-3 text-fg focus:border-brand-500 focus:outline-none"
         dir="ltr"
       />
@@ -53,11 +69,11 @@ export default function AnnouncementForm({
 
       <button
         type="submit"
-        disabled={isPending}
+        disabled={isPending || !localValue}
         className="mt-4 w-full rounded-xl bg-brand-gradient px-5 py-2.5 text-sm font-bold text-white transition-all hover:opacity-95 disabled:opacity-50 sm:w-auto"
       >
         {isPending ? "جارٍ الحفظ…" : editing ? "حفظ التعديل" : "نشر التنبيه"}
       </button>
     </form>
   );
-}
+        }
