@@ -3,17 +3,16 @@
 import { useEffect, useState } from "react";
 import { getActiveAnnouncementAction } from "@/app/actions/announcements";
 
-export default function AnnouncementPopup({ isAdmin }: { isAdmin: boolean }) {
+export default function AnnouncementPopup() {
   const [data, setData] = useState<{ message: string; publishedAt: string } | null>(null);
   const [ready, setReady] = useState(false);
   const [closed, setClosed] = useState(false);
 
   useEffect(() => {
-    if (isAdmin) return; // الأدمن مايشوفش التنبيهات خالص
     getActiveAnnouncementAction().then((result) => {
       setData(result);
     });
-  }, [isAdmin]);
+  }, []);
 
   useEffect(() => {
     if (!data) {
@@ -32,7 +31,7 @@ export default function AnnouncementPopup({ isAdmin }: { isAdmin: boolean }) {
     return () => clearTimeout(timer);
   }, [data]);
 
-  if (isAdmin || !data || closed || !ready) return null;
+  if (!data || closed || !ready) return null;
 
   return (
     <div className="fixed inset-0 z-[200] grid place-items-center bg-black/70 p-4">
@@ -52,4 +51,4 @@ export default function AnnouncementPopup({ isAdmin }: { isAdmin: boolean }) {
       </div>
     </div>
   );
-}
+        }
