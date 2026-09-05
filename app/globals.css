@@ -24,6 +24,21 @@
   --font-sans: var(--font-cairo), ui-sans-serif, system-ui, sans-serif;
 }
 
+/* ═══ ثيم: أبيض/فضي — الخلفية تفضل سودا زي الباقي، بس لون البراند أبيض/رمادي فاتح ═══ */
+[data-theme="light"] {
+  --color-brand-50: #ffffff;
+  --color-brand-100: #f5f5f5;
+  --color-brand-200: #e5e5e5;
+  --color-brand-300: #d4d4d4;
+  --color-brand-400: #a3a3a3;
+  --color-brand-500: #e5e5e5;
+  --color-brand-600: #d4d4d4;
+  --color-brand-700: #a3a3a3;
+  --color-brand-800: #737373;
+  --color-brand-900: #525252;
+  --color-line: #2e2e2e;
+}
+
 /* ═══ ثيم: أزرق فاتح (Sky) ═══ */
 [data-theme="sky"] {
   --color-brand-50: #f0f9ff;
@@ -243,4 +258,4 @@ body {
     animation: none !important;
     opacity: 1;
   }
-                           }
+        }
