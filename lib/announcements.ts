@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 
 export async function getActiveAnnouncement() {
   return prisma.announcement.findFirst({
-    where: { active: true, publishedAt: { lte: new Date() } },
+    where: { active: true },
     orderBy: { publishedAt: "desc" },
   });
 }
@@ -33,4 +33,4 @@ export async function setAnnouncementActive(id: string, active: boolean) {
 
 export async function deleteAnnouncement(id: string) {
   return prisma.announcement.delete({ where: { id } });
-           }
+                                     }
