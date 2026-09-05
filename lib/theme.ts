@@ -1,5 +1,6 @@
 export const THEMES = [
   { key: "gold", label: "ذهبي (الأساسي)", color: "#d4af37" },
+  { key: "light", label: "أبيض", color: "#e5e5e5" },
   { key: "sky", label: "أزرق فاتح", color: "#0ea5e9" },
   { key: "navy", label: "أزرق غامق", color: "#6366f1" },
   { key: "emerald", label: "أخضر زمردي", color: "#10b981" },
