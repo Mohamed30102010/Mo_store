@@ -26,3 +26,24 @@ export default function ThemeSwitcher() {
       <p className="mb-2 text-sm font-semibold text-fg">الثيم</p>
       <div className="flex flex-wrap gap-2">
         {THEMES.map((t) => (
+          <button
+            key={t.key}
+            type="button"
+            onClick={() => selectTheme(t.key)}
+            aria-label={t.label}
+            title={t.label}
+            className={`grid h-9 w-9 place-items-center rounded-full border-2 transition-all ${
+              active === t.key ? "border-fg scale-110" : "border-transparent"
+            }`}
+          >
+            <span
+              className="h-6 w-6 rounded-full ring-1 ring-inset ring-line"
+              style={{ backgroundColor: t.color }}
+              aria-hidden="true"
+            />
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+                                            }
