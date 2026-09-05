@@ -53,7 +53,10 @@ export default async function RootLayout({
       <body className="min-h-full flex flex-col text-fg antialiased">
         <SiteBackground />
         <TrackingPixels />
-        <AnnouncementPopup message={announcement?.message ?? null} />
+        <AnnouncementPopup
+          message={announcement?.message ?? null}
+          publishedAt={announcement?.publishedAt.toISOString() ?? null}
+        />
         <CartProvider>
           <SiteHeader />
           <main className="flex-1">{children}</main>
@@ -63,4 +66,4 @@ export default async function RootLayout({
       </body>
     </html>
   );
-}
+    }
