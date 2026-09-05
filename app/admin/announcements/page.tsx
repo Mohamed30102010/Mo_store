@@ -83,7 +83,11 @@ export default async function AdminAnnouncementsPage() {
                   </summary>
                   <div className="mt-3">
                     <AnnouncementForm
-                      editing={{ id: a.id, message: a.message, publishedAt: a.publishedAt }}
+                      editing={{
+                        id: a.id,
+                        message: a.message,
+                        publishedAt: a.publishedAt.toISOString(),
+                      }}
                     />
                   </div>
                 </details>
@@ -94,4 +98,4 @@ export default async function AdminAnnouncementsPage() {
       </div>
     </div>
   );
-                        }
+            }
