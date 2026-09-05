@@ -44,9 +44,10 @@ export default function AnnouncementPopup() {
         >
           ✕
         </button>
-        <div className="mb-3 text-2xl" aria-hidden="true">
-          📢
-        </div>
+        <div className="mb-3 flex items-center gap-2 text-fg">
+  <span className="text-2xl" aria-hidden="true">📢</span>
+  <span className="text-lg font-bold">تنبيه</span>
+</div>
         <p className="whitespace-pre-wrap leading-7 text-fg">{data.message}</p>
       </div>
     </div>
