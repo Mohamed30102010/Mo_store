@@ -8,7 +8,6 @@ import SiteFooter from "@/components/SiteFooter";
 import CartDrawer from "@/components/CartDrawer";
 import TrackingPixels from "@/components/TrackingPixels";
 import { getRewardSettings } from "@/lib/rewards";
-import { getActiveAnnouncement } from "@/lib/announcements";
 import SiteBackground from "@/components/SiteBackground";
 import AnnouncementPopup from "@/components/AnnouncementPopup";
 
@@ -43,20 +42,14 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [{ percent: rewardPercent }, announcement] = await Promise.all([
-    getRewardSettings(),
-    getActiveAnnouncement(),
-  ]);
+  const { percent: rewardPercent } = await getRewardSettings();
 
   return (
     <html lang="ar" dir="rtl" className={`${cairo.variable} h-full`}>
       <body className="min-h-full flex flex-col text-fg antialiased">
         <SiteBackground />
         <TrackingPixels />
-        <AnnouncementPopup
-          message={announcement?.message ?? null}
-          publishedAt={announcement?.publishedAt.toISOString() ?? null}
-        />
+        <AnnouncementPopup />
         <CartProvider>
           <SiteHeader />
           <main className="flex-1">{children}</main>
@@ -66,4 +59,4 @@ export default async function RootLayout({
       </body>
     </html>
   );
-    }
+}
