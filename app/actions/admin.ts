@@ -19,6 +19,12 @@ import { prisma } from "@/lib/prisma";
 import { PRODUCT_REQUEST_STATUSES, type ProductRequestStatus } from "@/lib/product-requests";
 import { REVIEW_STATUSES, type ReviewStatus } from "@/lib/reviews";
 import { markNotificationRead, markAllNotificationsRead } from "@/lib/notifications";
+import {
+  createAnnouncement,
+  updateAnnouncement,
+  setAnnouncementActive,
+  deleteAnnouncement,
+} from "@/lib/announcements";
 
 // ===== طلبات "اطلب منتج" =====
 export async function setProductRequestStatusAction(formData: FormData): Promise<void> {
