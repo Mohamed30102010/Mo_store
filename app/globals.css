@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* ===== هوية سينتاكس — ثيم أسود + ذهبي ===== */
+/* ===== هوية سينتاكس — ثيم أسود + ذهبي (Default) ===== */
 @theme {
   --color-brand-50: #fdf9ec;
   --color-brand-100: #faf0cd;
@@ -24,6 +24,81 @@
   --font-sans: var(--font-cairo), ui-sans-serif, system-ui, sans-serif;
 }
 
+/* ═══ ثيم: أزرق فاتح (Sky) ═══ */
+[data-theme="sky"] {
+  --color-brand-50: #f0f9ff;
+  --color-brand-100: #e0f2fe;
+  --color-brand-200: #bae6fd;
+  --color-brand-300: #7dd3fc;
+  --color-brand-400: #38bdf8;
+  --color-brand-500: #0ea5e9;
+  --color-brand-600: #0284c7;
+  --color-brand-700: #0369a1;
+  --color-brand-800: #075985;
+  --color-brand-900: #0c4a6e;
+  --color-line: #1e3a4f;
+}
+
+/* ═══ ثيم: أزرق غامق (Navy) ═══ */
+[data-theme="navy"] {
+  --color-brand-50: #eef2ff;
+  --color-brand-100: #e0e7ff;
+  --color-brand-200: #c7d2fe;
+  --color-brand-300: #a5b4fc;
+  --color-brand-400: #818cf8;
+  --color-brand-500: #6366f1;
+  --color-brand-600: #4f46e5;
+  --color-brand-700: #4338ca;
+  --color-brand-800: #3730a3;
+  --color-brand-900: #312e81;
+  --color-line: #262254;
+}
+
+/* ═══ ثيم: أخضر زمردي (Emerald) ═══ */
+[data-theme="emerald"] {
+  --color-brand-50: #ecfdf5;
+  --color-brand-100: #d1fae5;
+  --color-brand-200: #a7f3d0;
+  --color-brand-300: #6ee7b7;
+  --color-brand-400: #34d399;
+  --color-brand-500: #10b981;
+  --color-brand-600: #059669;
+  --color-brand-700: #047857;
+  --color-brand-800: #065f46;
+  --color-brand-900: #064e3b;
+  --color-line: #1f3d33;
+}
+
+/* ═══ ثيم: أحمر ياقوتي (Ruby) ═══ */
+[data-theme="ruby"] {
+  --color-brand-50: #fef2f2;
+  --color-brand-100: #fee2e2;
+  --color-brand-200: #fecaca;
+  --color-brand-300: #fca5a5;
+  --color-brand-400: #f87171;
+  --color-brand-500: #ef4444;
+  --color-brand-600: #dc2626;
+  --color-brand-700: #b91c1c;
+  --color-brand-800: #991b1b;
+  --color-brand-900: #7f1d1d;
+  --color-line: #3a1f1f;
+}
+
+/* ═══ ثيم: بنفسجي (Violet) ═══ */
+[data-theme="violet"] {
+  --color-brand-50: #f5f3ff;
+  --color-brand-100: #ede9fe;
+  --color-brand-200: #ddd6fe;
+  --color-brand-300: #c4b5fd;
+  --color-brand-400: #a78bfa;
+  --color-brand-500: #8b5cf6;
+  --color-brand-600: #7c3aed;
+  --color-brand-700: #6d28d9;
+  --color-brand-800: #5b21b6;
+  --color-brand-900: #4c1d95;
+  --color-line: #2e2154;
+}
+
 :root {
   --background: var(--color-bg);
   --foreground: var(--color-fg);
@@ -42,100 +117,58 @@ body {
   overflow-x: hidden;
 }
 
-/* أرقام متساوية العرض للأسعار */
 .tnum {
   font-variant-numeric: tabular-nums;
 }
 
-/* نص بتدرّج ذهبي (زي كلمة Builders في المرجع) */
 .text-gradient {
-  background: linear-gradient(100deg, #e3b632 0%, #d4af37 45%, #f5e196 100%);
+  background: linear-gradient(100deg, var(--color-brand-400) 0%, var(--color-brand-500) 45%, var(--color-brand-200) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
-/* خلفية زر/عنصر بتدرّج البراند */
 .bg-brand-gradient {
-  background: linear-gradient(135deg, #b8912a 0%, #967322 100%);
+  background: linear-gradient(135deg, var(--color-brand-600) 0%, var(--color-brand-700) 100%);
 }
 .bg-brand-gradient:hover {
-  background: linear-gradient(135deg, #d4af37 0%, #b8912a 100%);
+  background: linear-gradient(135deg, var(--color-brand-500) 0%, var(--color-brand-600) 100%);
 }
 
-/* توهّج ناعم خلف عناصر الهيرو */
 .glow {
-  box-shadow: 0 0 80px -20px rgba(212, 175, 55, 0.45);
+  box-shadow: 0 0 80px -20px color-mix(in srgb, var(--color-brand-500) 45%, transparent);
 }
-
-/* ═══════════════════════════════════════════════════════════
-   الحركة (Animation) — احترافية، خفيفة، وبتحترم prefers-reduced-motion
-   ═══════════════════════════════════════════════════════════ */
 
 @keyframes fade-in-up {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes scale-in {
-  from {
-    opacity: 0;
-    transform: scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 @keyframes pop {
-  0% {
-    transform: scale(1);
-  }
-  35% {
-    transform: scale(1.18);
-  }
-  100% {
-    transform: scale(1);
-  }
+  0% { transform: scale(1); }
+  35% { transform: scale(1.18); }
+  100% { transform: scale(1); }
 }
 
 @keyframes shimmer {
-  from {
-    background-position: 150% 0;
-  }
-  to {
-    background-position: -50% 0;
-  }
+  from { background-position: 150% 0; }
+  to { background-position: -50% 0; }
 }
 
 @keyframes blink-cursor {
-  0%,
-  45% {
-    opacity: 1;
-  }
-  50%,
-  95% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
+  0%, 45% { opacity: 1; }
+  50%, 95% { opacity: 0; }
+  100% { opacity: 1; }
 }
 
 .animate-fade-in-up {
@@ -151,7 +184,6 @@ body {
   animation: pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* تأخير بسيط لتتابع ظهور عناصر الشبكة (بطاقات المنتجات) */
 .stagger > * {
   animation: fade-in-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
@@ -163,7 +195,6 @@ body {
 .stagger > *:nth-child(6) { animation-delay: 300ms; }
 .stagger > *:nth-child(n+7) { animation-delay: 360ms; }
 
-/* هياكل تحميل (Skeleton) — شيمر خفيف */
 .skeleton {
   background: linear-gradient(
     100deg,
@@ -175,7 +206,6 @@ body {
   animation: shimmer 1.8s ease-in-out infinite;
 }
 
-/* مؤشر طرفية (Terminal cursor) — جزء من هوية "سينتاكس" (Syntax) */
 .terminal-cursor::after {
   content: "";
   display: inline-block;
@@ -187,7 +217,6 @@ body {
   animation: blink-cursor 1.1s step-end infinite;
 }
 
-/* شارة على طراز تعليق كود — العنصر المميّز للهوية البصرية */
 .code-eyebrow {
   font-family: ui-monospace, "SFMono-Regular", "IBM Plex Mono", Consolas, monospace;
   letter-spacing: 0.01em;
@@ -195,14 +224,12 @@ body {
   unicode-bidi: isolate;
 }
 
-/* حالة تركيز واضحة لكل عنصر تفاعلي — إتاحة (Phase 60) */
 :focus-visible {
   outline: 2px solid var(--color-brand-400);
   outline-offset: 2px;
   border-radius: 4px;
 }
 
-/* احترام تفضيل تقليل الحركة — بيوقف كل الأنيميشن العلوي (Phase 51) */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -216,4 +243,4 @@ body {
     animation: none !important;
     opacity: 1;
   }
-}
+                           }
