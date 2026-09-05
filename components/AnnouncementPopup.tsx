@@ -1,31 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
 import { getActiveAnnouncementAction } from "@/app/actions/announcements";
 
 export default function AnnouncementPopup() {
-  const pathname = usePathname();
   const [data, setData] = useState<{ message: string; publishedAt: string } | null>(null);
   const [ready, setReady] = useState(false);
   const [closed, setClosed] = useState(false);
 
-  // بنجيب التنبيه الحالي كل مرة الصفحة تتغيّر (تسجيل دخول/حساب/أي قسم)
-  // من غير ما نحتاج Refresh كامل للمتصفح
+  // بنجيب التنبيه مرة واحدة بس عند أول تحميل للموقع (Refresh أو دخول جديد)
   useEffect(() => {
-    let cancelled = false;
-    setReady(false);
-    setClosed(false);
-
     getActiveAnnouncementAction().then((result) => {
-      if (cancelled) return;
       setData(result);
     });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [pathname]);
+  }, []);
 
   useEffect(() => {
     if (!data) {
@@ -64,4 +52,4 @@ export default function AnnouncementPopup() {
       </div>
     </div>
   );
-}
+    }
