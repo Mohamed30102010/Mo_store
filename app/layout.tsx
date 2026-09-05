@@ -48,12 +48,15 @@ export default async function RootLayout({
     getCurrentUser(),
   ]);
 
+  // التنبيه يظهر بس للعميل المسجّل دخول فعليًا (مش زائر ومش أدمن)
+  const showAnnouncement = !!user && user.role !== "admin";
+
   return (
     <html lang="ar" dir="rtl" className={`${cairo.variable} h-full`}>
       <body className="min-h-full flex flex-col text-fg antialiased">
         <SiteBackground />
         <TrackingPixels />
-        <AnnouncementPopup isAdmin={user?.role === "admin"} />
+        {showAnnouncement && <AnnouncementPopup />}
         <CartProvider>
           <SiteHeader />
           <main className="flex-1">{children}</main>
