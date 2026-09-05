@@ -12,8 +12,23 @@ import { put, del } from "@vercel/blob";
  *   لوحدها، وإنما تحقق صلاحيات حقيقي على السيرفر.
  */
 
-const ALLOWED_IMAGE = ["image/jpeg", "image/png", "image/webp"];
 const DEFAULT_MAX = 5 * 1024 * 1024; // 5MB
+
+// خريطة الامتدادات الشائعة — تُستخدم لو النوع مش معروف بدقة (fallback: bin)
+const EXT_BY_MIME: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/jpg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+  "image/gif": "gif",
+  "image/svg+xml": "svg",
+  "image/bmp": "bmp",
+  "image/tiff": "tiff",
+  "image/avif": "avif",
+  "image/x-icon": "ico",
+  "image/heic": "heic",
+  "image/heif": "heif",
+};
 
 export type UploadedImage = {
   url: string;
@@ -26,8 +41,10 @@ export async function uploadImage(
   subdir: string,
   maxBytes = DEFAULT_MAX
 ): Promise<UploadedImage> {
-  if (!ALLOWED_IMAGE.includes(file.type)) {
-    throw new Error("الصورة لازم تكون JPG أو PNG أو WEBP.");
+  // نقبل أي نوع صورة (image/*) — بدل قايمة محدودة سابقًا
+  const isImage = file.type.startsWith("image/");
+  if (!isImage) {
+    throw new Error("الملف ده مش صورة صالحة.");
   }
   if (file.size > maxBytes) {
     throw new Error("حجم الصورة كبير (الحد الأقصى 5 ميجا).");
@@ -38,8 +55,10 @@ export async function uploadImage(
     );
   }
 
-  const ext =
-    file.type === "image/png" ? "png" : file.type === "image/webp" ? "webp" : "jpg";
+  // نحدد الامتداد من نوع الملف لو معروف، وإلا ناخده من اسم الملف الأصلي، وإلا "img" افتراضيًا
+  const fromName = file.name.includes(".") ? file.name.split(".").pop() : undefined;
+  const ext = EXT_BY_MIME[file.type] || fromName || "img";
+
   const rand = Array.from({ length: 20 }, () =>
     "abcdefghijklmnopqrstuvwxyz0123456789"[Math.floor(Math.random() * 36)]
   ).join("");
@@ -49,7 +68,7 @@ export async function uploadImage(
   const blob = await put(pathname, file, {
     access: "public",
     addRandomSuffix: false,
-    contentType: file.type,
+    contentType: file.type || "application/octet-stream",
   });
 
   return { url: blob.url, pathname: blob.pathname };
@@ -78,4 +97,4 @@ export async function deleteBlobIfOwned(url: string | null | undefined): Promise
   } catch {
     // متعمّد — تجاهل فشل المسح
   }
-}
+    }
