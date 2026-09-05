@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
+import ThemeSwitcher from "./ThemeSwitcher";
 
 type NavItem = { label: string; href: string };
 
@@ -93,6 +94,9 @@ export default function MobileNav({
                 </Link>
               ))}
 
+              <div className="my-2 h-px bg-line" />
+              <ThemeSwitcher />
+
               {isAdmin && (
                 <Link
                   href="/admin"
@@ -129,4 +133,4 @@ function MenuIcon() {
       <path d="M4 7h16M4 12h16M4 17h16" />
     </svg>
   );
-}
+          }
