@@ -8,10 +8,10 @@ import SiteFooter from "@/components/SiteFooter";
 import CartDrawer from "@/components/CartDrawer";
 import TrackingPixels from "@/components/TrackingPixels";
 import { getRewardSettings } from "@/lib/rewards";
+import { getActiveAnnouncement } from "@/lib/announcements";
 import SiteBackground from "@/components/SiteBackground";
+import AnnouncementPopup from "@/components/AnnouncementPopup";
 
-// الليّاوت بيعمل استعلام لقاعدة البيانات (نسبة نقاط المكافآت) — لازم يفضل ديناميكي
-// عشان Next.js متحاولش تجهّزه بشكل ثابت وقت الـ build (لما الداتابيز مش متاحة أصلاً)
 export const dynamic = "force-dynamic";
 
 const cairo = Cairo({
@@ -43,14 +43,17 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { percent: rewardPercent } = await getRewardSettings();
+  const [{ percent: rewardPercent }, announcement] = await Promise.all([
+    getRewardSettings(),
+    getActiveAnnouncement(),
+  ]);
 
   return (
     <html lang="ar" dir="rtl" className={`${cairo.variable} h-full`}>
       <body className="min-h-full flex flex-col text-fg antialiased">
         <SiteBackground />
-        {/* أكواد التتبّع (بكسلات) — بتتحقن حسب إعدادات لوحة التحكم */}
         <TrackingPixels />
+        <AnnouncementPopup message={announcement?.message ?? null} />
         <CartProvider>
           <SiteHeader />
           <main className="flex-1">{children}</main>
