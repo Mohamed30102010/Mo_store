@@ -275,3 +275,62 @@ export async function markAllNotificationsReadAction(): Promise<void> {
   revalidatePath("/admin/notifications");
   revalidatePath("/admin");
 }
+// ===== التنبيهات العامة =====
+export type AnnouncementFormState = { error?: string };
+
+export async function createAnnouncementAction(
+  _prev: AnnouncementFormState,
+  formData: FormData
+): Promise<AnnouncementFormState> {
+  await requireAdmin();
+  const message = cleanStr(formData.get("message"), 500);
+  const publishedAtRaw = cleanStr(formData.get("publishedAt"), 40);
+
+  if (!isNonEmpty(message, 3)) return { error: "اكتب نص التنبيه." };
+
+  const publishedAt = publishedAtRaw ? new Date(publishedAtRaw) : new Date();
+  if (isNaN(publishedAt.getTime())) return { error: "التاريخ/الوقت غير صحيح." };
+
+  await createAnnouncement(message, publishedAt);
+  revalidatePath("/admin/announcements");
+  revalidatePath("/");
+  return {};
+}
+
+export async function updateAnnouncementAction(
+  _prev: AnnouncementFormState,
+  formData: FormData
+): Promise<AnnouncementFormState> {
+  await requireAdmin();
+  const id = cleanStr(formData.get("id"), 40);
+  const message = cleanStr(formData.get("message"), 500);
+  const publishedAtRaw = cleanStr(formData.get("publishedAt"), 40);
+
+  if (!id) return { error: "تنبيه غير معروف." };
+  if (!isNonEmpty(message, 3)) return { error: "اكتب نص التنبيه." };
+
+  const publishedAt = publishedAtRaw ? new Date(publishedAtRaw) : new Date();
+  if (isNaN(publishedAt.getTime())) return { error: "التاريخ/الوقت غير صحيح." };
+
+  await updateAnnouncement(id, { message, publishedAt });
+  revalidatePath("/admin/announcements");
+  revalidatePath("/");
+  return {};
+}
+
+export async function toggleAnnouncementActiveAction(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const id = cleanStr(formData.get("id"), 40);
+  const active = formData.get("active") === "true";
+  if (id) await setAnnouncementActive(id, active);
+  revalidatePath("/admin/announcements");
+  revalidatePath("/");
+}
+
+export async function deleteAnnouncementAction(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const id = cleanStr(formData.get("id"), 40);
+  if (id) await deleteAnnouncement(id);
+  revalidatePath("/admin/announcements");
+  revalidatePath("/");
+}
