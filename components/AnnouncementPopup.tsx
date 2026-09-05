@@ -1,20 +1,38 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import { getActiveAnnouncementAction } from "@/app/actions/announcements";
 
-export default function AnnouncementPopup({
-  message,
-  publishedAt,
-}: {
-  message: string | null;
-  publishedAt: string | null; // ISO string
-}) {
-  const [closed, setClosed] = useState(false);
+export default function AnnouncementPopup() {
+  const pathname = usePathname();
+  const [data, setData] = useState<{ message: string; publishedAt: string } | null>(null);
   const [ready, setReady] = useState(false);
+  const [closed, setClosed] = useState(false);
+
+  // بنجيب التنبيه الحالي كل مرة الصفحة تتغيّر (تسجيل دخول/حساب/أي قسم)
+  // من غير ما نحتاج Refresh كامل للمتصفح
+  useEffect(() => {
+    let cancelled = false;
+    setReady(false);
+    setClosed(false);
+
+    getActiveAnnouncementAction().then((result) => {
+      if (cancelled) return;
+      setData(result);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [pathname]);
 
   useEffect(() => {
-    if (!publishedAt) return;
-    const target = new Date(publishedAt).getTime();
+    if (!data) {
+      setReady(false);
+      return;
+    }
+    const target = new Date(data.publishedAt).getTime();
     const now = Date.now();
 
     if (now >= target) {
@@ -22,12 +40,11 @@ export default function AnnouncementPopup({
       return;
     }
 
-    // نستنى بالظبط لحد اللحظة المحددة ونظهر التنبيه فورًا من غير Refresh
     const timer = setTimeout(() => setReady(true), target - now);
     return () => clearTimeout(timer);
-  }, [publishedAt]);
+  }, [data]);
 
-  if (!message || closed || !ready) return null;
+  if (!data || closed || !ready) return null;
 
   return (
     <div className="fixed inset-0 z-[200] grid place-items-center bg-black/70 p-4">
@@ -43,8 +60,8 @@ export default function AnnouncementPopup({
         <div className="mb-3 text-2xl" aria-hidden="true">
           📢
         </div>
-        <p className="whitespace-pre-wrap leading-7 text-fg">{message}</p>
+        <p className="whitespace-pre-wrap leading-7 text-fg">{data.message}</p>
       </div>
     </div>
   );
-        }
+}
