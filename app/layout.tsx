@@ -10,6 +10,7 @@ import TrackingPixels from "@/components/TrackingPixels";
 import { getRewardSettings } from "@/lib/rewards";
 import { getCurrentUser } from "@/lib/auth";
 import SiteBackground from "@/components/SiteBackground";
+import ThemeProvider from "@/components/ThemeProvider";
 import AnnouncementPopup from "@/components/AnnouncementPopup";
 
 export const dynamic = "force-dynamic";
@@ -54,6 +55,7 @@ export default async function RootLayout({
   return (
     <html lang="ar" dir="rtl" className={`${cairo.variable} h-full`}>
       <body className="min-h-full flex flex-col text-fg antialiased">
+        <ThemeProvider />
         <SiteBackground />
         <TrackingPixels />
         {showAnnouncement && <AnnouncementPopup />}
@@ -66,4 +68,4 @@ export default async function RootLayout({
       </body>
     </html>
   );
-}
+    }
