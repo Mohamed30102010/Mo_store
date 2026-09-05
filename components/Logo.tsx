@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { site } from "@/lib/site";
 
-/** لوجو MO STORE: مونوجرام MD بأسلوب Monster Design — أسود وذهبي */
+/** لوجو MO STORE: مونوجرام MD بأسلوب Monster Design — بيتلوّن حسب الثيم المختار */
 export default function Logo({ className = "" }: { className?: string }) {
   return (
     <Link href="/" className={`flex items-center gap-2.5 ${className}`}>
@@ -26,14 +26,14 @@ function MDMark() {
     >
       <defs>
         <linearGradient id="mdGold" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#f5e196" />
-          <stop offset="0.5" stopColor="#d4af37" />
-          <stop offset="1" stopColor="#b8912a" />
+          <stop offset="0" stopColor="var(--color-brand-200)" />
+          <stop offset="0.5" stopColor="var(--color-brand-500)" />
+          <stop offset="1" stopColor="var(--color-brand-600)" />
         </linearGradient>
       </defs>
 
       {/* خلفية دائرية سوداء */}
-      <circle cx="32" cy="32" r="31" fill="#050505" stroke="url(#mdGold)" strokeWidth="1.5" />
+      <circle cx="32" cy="32" r="31" fill="var(--color-bg)" stroke="url(#mdGold)" strokeWidth="1.5" />
 
       {/* حرف M — الجزء الأيسر */}
       <path
