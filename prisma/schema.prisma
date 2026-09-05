@@ -173,3 +173,14 @@ model Notification {
   @@index([read])
   @@index([createdAt])
 }
+/// تنبيه عام يظهر لكل زوار المتجر كنافذة منبثقة لحد ما الأدمن يوقفه
+model Announcement {
+  id          String   @id @default(cuid())
+  message     String
+  active      Boolean  @default(true)
+  publishedAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([active])
+}
