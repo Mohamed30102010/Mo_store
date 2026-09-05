@@ -1,11 +1,33 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-export default function AnnouncementPopup({ message }: { message: string | null }) {
+export default function AnnouncementPopup({
+  message,
+  publishedAt,
+}: {
+  message: string | null;
+  publishedAt: string | null; // ISO string
+}) {
   const [closed, setClosed] = useState(false);
+  const [ready, setReady] = useState(false);
 
-  if (!message || closed) return null;
+  useEffect(() => {
+    if (!publishedAt) return;
+    const target = new Date(publishedAt).getTime();
+    const now = Date.now();
+
+    if (now >= target) {
+      setReady(true);
+      return;
+    }
+
+    // نستنى بالظبط لحد اللحظة المحددة ونظهر التنبيه فورًا من غير Refresh
+    const timer = setTimeout(() => setReady(true), target - now);
+    return () => clearTimeout(timer);
+  }, [publishedAt]);
+
+  if (!message || closed || !ready) return null;
 
   return (
     <div className="fixed inset-0 z-[200] grid place-items-center bg-black/70 p-4">
@@ -25,4 +47,4 @@ export default function AnnouncementPopup({ message }: { message: string | null 
       </div>
     </div>
   );
-}
+        }
