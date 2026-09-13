@@ -17,6 +17,7 @@ const links = [
   { href: "/admin/reviews", label: "آراء العملاء", icon: "⭐" },
   { href: "/admin/notifications", label: "الإشعارات", icon: "🔔" },
   { href: "/admin/announcements", label: "التنبيهات", icon: "📢" },
+  { href: "/admin/coupons", label: "الكوبونات", icon: "🏷️" },
   { href: "/admin/settings", label: "الإعدادات", icon: "⚙️" },
 ];
 
