@@ -184,3 +184,30 @@ model Announcement {
 
   @@index([active])
 }
+/// كوبون خصم بنسبة مئوية — بعدد استخدامات محدود، وكل عميل يستخدمه مرة واحدة بس
+model Coupon {
+  id              String      @id @default(cuid())
+  code            String      @unique
+  discountPercent Int
+  maxUses         Int
+  usedCount       Int         @default(0)
+  active          Boolean     @default(true)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  uses            CouponUse[]
+
+  @@index([active])
+}
+
+/// سجل استخدام كوبون — يمنع نفس رقم الموبايل من استخدام نفس الكوبون مرتين
+model CouponUse {
+  id            String   @id @default(cuid())
+  couponId      String
+  coupon        Coupon   @relation(fields: [couponId], references: [id])
+  customerPhone String
+  orderId       String?
+  createdAt     DateTime @default(now())
+
+  @@unique([couponId, customerPhone])
+  @@index([couponId])
+}
