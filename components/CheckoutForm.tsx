@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useCart } from "@/lib/cart";
 import { formatPrice } from "@/lib/format";
 import { placeOrderAction, type CheckoutState } from "@/app/actions/checkout";
+import { checkCouponAction } from "@/app/actions/coupons";
 import { site, shippingCostCents } from "@/lib/site";
 import type { BumpOffer } from "@/lib/settings";
 
@@ -27,17 +28,39 @@ export default function CheckoutForm({ user, bump, bumpChecked, onBumpChange }: 
   const [method, setMethod] = useState<"cash" | "transfer">("cash");
   const [wantAccount, setWantAccount] = useState(false);
   const done = useRef(false);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  // ═══ كوبون الخصم ═══
+  const [couponCode, setCouponCode] = useState("");
+  const [couponResult, setCouponResult] = useState<{ discountPercent: number } | null>(null);
+  const [couponError, setCouponError] = useState<string | null>(null);
+  const [couponChecking, setCouponChecking] = useState(false);
+
+  async function handleCheckCoupon() {
+    if (!couponCode.trim()) return;
+    setCouponChecking(true);
+    setCouponError(null);
+    const fd = new FormData(formRef.current ?? undefined);
+    const phone = String(fd.get("customerPhone") || "").trim();
+    const result = await checkCouponAction(couponCode, phone);
+    if (result.valid) {
+      setCouponResult({ discountPercent: result.discountPercent });
+      setCouponError(null);
+    } else {
+      setCouponResult(null);
+      setCouponError(result.error);
+    }
+    setCouponChecking(false);
+  }
 
   const hasPhysical = items.some((i) => i.type === "physical");
   const itemsJson = JSON.stringify(
     items.map((i) => ({ productId: i.productId, qty: i.qty }))
   );
 
-  // عند نجاح الطلب: نفرّغ السلة ونروح لصفحة الطلب
   useEffect(() => {
     if (state.ok && state.orderNumber && !done.current) {
       done.current = true;
-      // علامة لإطلاق حدث Purchase للبكسلات في صفحة الطلب (مرة واحدة)
       try { sessionStorage.setItem("just_placed_order", state.orderNumber); } catch {}
       clear();
       router.replace(`/orders/${state.orderNumber}`);
@@ -45,7 +68,7 @@ export default function CheckoutForm({ user, bump, bumpChecked, onBumpChange }: 
   }, [state, clear, router]);
 
   return (
-    <form action={formAction} className="flex flex-col gap-6">
+    <form ref={formRef} action={formAction} className="flex flex-col gap-6">
       <input type="hidden" name="items" value={itemsJson} />
 
       {/* بيانات العميل */}
@@ -95,7 +118,6 @@ export default function CheckoutForm({ user, bump, bumpChecked, onBumpChange }: 
           className="mt-1 w-full rounded-xl border border-line bg-bg px-3 py-2 text-fg outline-none focus:border-brand-500"
         />
 
-        {/* إنشاء حساب (لو مش مسجّل) */}
         {!user && (
           <div className="mt-4 rounded-xl border border-line bg-bg p-4">
             <label className="flex items-center gap-2 text-sm font-medium text-fg">
@@ -124,6 +146,40 @@ export default function CheckoutForm({ user, bump, bumpChecked, onBumpChange }: 
             )}
           </div>
         )}
+      </section>
+
+      {/* كوبون الخصم */}
+      <section className="rounded-2xl border border-line bg-surface p-5">
+        <h2 className="mb-4 font-bold text-fg">كود الخصم (اختياري)</h2>
+        <div className="flex gap-2">
+          <input
+            type="text"
+            name="couponCode"
+            value={couponCode}
+            onChange={(e) => {
+              setCouponCode(e.target.value);
+              setCouponResult(null);
+              setCouponError(null);
+            }}
+            placeholder="اكتب الكود هنا"
+            dir="ltr"
+            className="flex-1 rounded-xl border border-line bg-bg px-3 py-2.5 text-fg placeholder:text-muted/60 focus:border-brand-500 focus:outline-none"
+          />
+          <button
+            type="button"
+            onClick={handleCheckCoupon}
+            disabled={couponChecking || !couponCode.trim()}
+            className="shrink-0 rounded-xl border border-line bg-bg px-4 py-2.5 text-sm font-semibold text-fg transition-colors hover:bg-surface-2 disabled:opacity-50"
+          >
+            {couponChecking ? "جارٍ التحقق…" : "تطبيق"}
+          </button>
+        </div>
+        {couponResult && (
+          <p className="mt-2 text-sm font-semibold text-emerald-400">
+            ✓ الكود صحيح — خصم {couponResult.discountPercent}%
+          </p>
+        )}
+        {couponError && <p className="mt-2 text-sm text-red-300">{couponError}</p>}
       </section>
 
       {/* طريقة الدفع */}
@@ -180,7 +236,6 @@ export default function CheckoutForm({ user, bump, bumpChecked, onBumpChange }: 
         )}
       </section>
 
-      {/* ═══ العرض الإضافي (Order Bump) ═══ */}
       {bump && (
         <label
           className={`relative flex cursor-pointer items-center gap-4 overflow-hidden rounded-2xl border-2 border-dashed p-4 transition-all ${
@@ -235,14 +290,28 @@ export default function CheckoutForm({ user, bump, bumpChecked, onBumpChange }: 
           const effSubtotal = subtotalCents + bumpCents;
           const effHasPhysical =
             hasPhysical || (bump && bumpChecked && bump.type === "physical");
+          const shipping = shippingCostCents(effSubtotal, !!effHasPhysical);
+          const discountCents = couponResult
+            ? Math.round((effSubtotal * couponResult.discountPercent) / 100)
+            : 0;
+          const total = effSubtotal - discountCents + shipping;
+
           return (
-            <div className="flex items-center justify-between text-fg">
-              <span className="text-muted">
-                الإجمالي{effHasPhysical ? " (شامل الشحن)" : ""}
-              </span>
-              <span className="tnum text-xl font-extrabold">
-                {formatPrice(effSubtotal + shippingCostCents(effSubtotal, !!effHasPhysical))}
-              </span>
+            <div className="flex flex-col gap-1.5">
+              <div className="flex items-center justify-between text-sm text-muted">
+                <span>الإجمالي الفرعي{effHasPhysical ? " + الشحن" : ""}</span>
+                <span className="tnum">{formatPrice(effSubtotal + shipping)}</span>
+              </div>
+              {discountCents > 0 && (
+                <div className="flex items-center justify-between text-sm text-emerald-400">
+                  <span>خصم الكوبون ({couponResult?.discountPercent}%)</span>
+                  <span className="tnum">-{formatPrice(discountCents)}</span>
+                </div>
+              )}
+              <div className="mt-1 flex items-center justify-between border-t border-line pt-2 text-fg">
+                <span className="font-semibold">الإجمالي النهائي</span>
+                <span className="tnum text-xl font-extrabold">{formatPrice(total)}</span>
+              </div>
             </div>
           );
         })()}
