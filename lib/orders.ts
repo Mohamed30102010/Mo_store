@@ -66,16 +66,24 @@ export type NewOrderInput = {
   note: string | null;
   shippingCents: number;
   items: NewOrderItem[];
+  couponCode?: string | null;
+  discountCents?: number;
 };
 
-export async function createOrder(input: NewOrderInput) {
+/**
+ * ينشئ الطلب. لو اتبعتله `tx` (Prisma transaction client)، بيستخدمه بدل الاتصال العادي
+ * — ده بيسمح باستخدامه جوه معاملة أكبر (زي حجز كوبون خصم بأمان في نفس الوقت).
+ * لو استُخدم من غير `tx`، بيبعت الإشعار فورًا بعد الإنشاء زي المعتاد.
+ */
+export async function createOrder(input: NewOrderInput, tx: any = prisma) {
   const subtotalCents = input.items.reduce(
     (sum, i) => sum + i.priceCents * i.qty,
     0
   );
   const orderNumber = await generateOrderNumber();
+  const discountCents = input.discountCents ?? 0;
 
-  const order = await prisma.order.create({
+  const order = await tx.order.create({
     data: {
       orderNumber,
       userId: input.userId,
@@ -88,7 +96,9 @@ export async function createOrder(input: NewOrderInput) {
       note: input.note,
       subtotalCents,
       shippingCents: input.shippingCents,
-      totalCents: subtotalCents + input.shippingCents,
+      discountCents,
+      couponCode: input.couponCode ?? null,
+      totalCents: subtotalCents - discountCents + input.shippingCents,
       status: "pending",
       items: {
         create: input.items.map((i) => ({
@@ -103,12 +113,14 @@ export async function createOrder(input: NewOrderInput) {
     include: { items: true },
   });
 
-  await createNotification(
-    "order",
-    "طلب جديد 🧾",
-    `طلب جديد من ${input.customerName} — رقم الطلب ${order.orderNumber}`,
-    `/admin/orders/${order.id}`
-  );
+  if (tx === prisma) {
+    await createNotification(
+      "order",
+      "طلب جديد 🧾",
+      `طلب جديد من ${input.customerName} — رقم الطلب ${order.orderNumber}`,
+      `/admin/orders/${order.id}`
+    );
+  }
 
   return order;
 }
@@ -178,4 +190,4 @@ export async function getStats() {
     cancelled: byStatus["cancelled"] ?? 0,
     returned: byStatus["returned"] ?? 0,
   };
-      }
+    }
