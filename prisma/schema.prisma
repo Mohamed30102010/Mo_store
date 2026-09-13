@@ -68,6 +68,8 @@ model Order {
   proofImage    String? // مسار صورة إثبات الدفع (للتحويل)
   note          String?
   items         OrderItem[]
+couponCode    String? // كود الكوبون المُطبّق (لو فيه)
+  discountCents Int     @default(0) // قيمة الخصم بالقروش
 
   // ═══ نقاط المكافآت — حماية من ازدواجية المنح (Phase 36) ═══
   rewardPointsEarned   Int?     // null = لسه ماتمنحش نقاط لهذا الطلب. رقم = القيمة اللي اتمنحت (مرة واحدة بس)
