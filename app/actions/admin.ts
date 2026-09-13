@@ -334,3 +334,52 @@ export async function deleteAnnouncementAction(formData: FormData): Promise<void
   revalidatePath("/admin/announcements");
   revalidatePath("/");
 }
+// ===== الكوبونات =====
+export type CouponFormState = { error?: string };
+
+export async function createCouponAction(
+  _prev: CouponFormState,
+  formData: FormData
+): Promise<CouponFormState> {
+  await requireAdmin();
+  const codeRaw = cleanStr(formData.get("code"), 40);
+  const code = codeRaw.trim().toUpperCase();
+  const discountPercent = Math.round(Number(cleanStr(formData.get("discountPercent"), 5)));
+  const maxUses = Math.round(Number(cleanStr(formData.get("maxUses"), 10)));
+
+  if (!isNonEmpty(code, 2)) return { error: "اكتب كود الخصم." };
+  if (
+    !Number.isFinite(discountPercent) ||
+    discountPercent < 10 ||
+    discountPercent > 90 ||
+    discountPercent % 10 !== 0
+  )
+    return { error: "نسبة الخصم لازم تكون من 10% لـ 90% (مضاعفات 10)." };
+  if (!Number.isFinite(maxUses) || maxUses < 1)
+    return { error: "عدد الاستخدامات لازم يكون رقم أكبر من صفر." };
+
+  const existing = await prisma.coupon.findUnique({ where: { code } });
+  if (existing) return { error: "فيه كوبون بنفس الكود ده بالفعل." };
+
+  await prisma.coupon.create({ data: { code, discountPercent, maxUses } });
+  revalidatePath("/admin/coupons");
+  return {};
+}
+
+export async function toggleCouponActiveAction(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const id = cleanStr(formData.get("id"), 40);
+  const active = formData.get("active") === "true";
+  if (id) await prisma.coupon.update({ where: { id }, data: { active } });
+  revalidatePath("/admin/coupons");
+}
+
+export async function deleteCouponAction(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const id = cleanStr(formData.get("id"), 40);
+  if (id) {
+    await prisma.couponUse.deleteMany({ where: { couponId: id } });
+    await prisma.coupon.delete({ where: { id } });
+  }
+  revalidatePath("/admin/coupons");
+}
