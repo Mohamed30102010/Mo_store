@@ -2,6 +2,7 @@ import Link from "next/link";
 import { site } from "@/lib/site";
 import { getCurrentUser } from "@/lib/auth";
 import { getUnreadNotificationsCount } from "@/lib/notifications";
+import { getUnreadCustomerNotificationsCount } from "@/lib/customer-notifications";
 import Logo from "./Logo";
 import CartButton from "./CartButton";
 import MobileNav from "./MobileNav";
@@ -9,8 +10,17 @@ import HeaderShell from "./HeaderShell";
 
 export default async function SiteHeader() {
   const user = await getCurrentUser();
-  const hasUnreadNotifications =
-    user?.role === "admin" ? (await getUnreadNotificationsCount()) > 0 : false;
+
+  let hasUnreadNotifications = false;
+  let customerNotifications: { count: number } | null = null;
+
+  if (user?.role === "admin") {
+    hasUnreadNotifications = (await getUnreadNotificationsCount()) > 0;
+  } else if (user) {
+    const count = await getUnreadCustomerNotificationsCount(user.id);
+    hasUnreadNotifications = count > 0;
+    customerNotifications = { count };
+  }
 
   return (
     <HeaderShell>
@@ -72,6 +82,7 @@ export default async function SiteHeader() {
             items={site.nav}
             isAdmin={user?.role === "admin"}
             hasUnreadNotifications={hasUnreadNotifications}
+            customerNotifications={customerNotifications}
           />
         </div>
 
@@ -108,4 +119,4 @@ function SearchIcon() {
       <path d="m21 21-4.3-4.3" />
     </svg>
   );
-}
+              }
