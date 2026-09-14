@@ -25,6 +25,7 @@ import {
   setAnnouncementActive,
   deleteAnnouncement,
 } from "@/lib/announcements";
+import { broadcastToCustomers, notifyCustomer } from "@/lib/customer-notifications";
 
 // ===== طلبات "اطلب منتج" =====
 export async function setProductRequestStatusAction(formData: FormData): Promise<void> {
@@ -36,6 +37,7 @@ export async function setProductRequestStatusAction(formData: FormData): Promise
   await prisma.productRequest.update({ where: { id }, data: { status } });
   revalidatePath("/admin/requests");
 }
+
 // ===== الطلبات =====
 export async function setOrderStatusAction(formData: FormData): Promise<void> {
   await requireAdmin();
@@ -44,7 +46,6 @@ export async function setOrderStatusAction(formData: FormData): Promise<void> {
   if (!id || !ORDER_STATUSES.includes(status as OrderStatus)) return;
   await updateOrderStatus(id, status as OrderStatus);
 
-  // نقاط المكافآت: تُمنح فقط عند "delivered"، وترجع لو الطلب اتلغى أو رجع بعدها (Phase 35/37)
   if (status === "delivered") {
     await awardOrderPoints(id);
   } else if (status === "cancelled" || status === "returned") {
@@ -63,7 +64,7 @@ function slugify(input: string): string {
   return input
     .trim()
     .toLowerCase()
-    .replace(/[^\p{L}\p{N}]+/gu, "-") // أي رمز غير حرف/رقم → شرطة
+    .replace(/[^\p{L}\p{N}]+/gu, "-")
     .replace(/^-+|-+$/g, "")
     .slice(0, 80);
 }
@@ -111,14 +112,11 @@ async function parseProductForm(
   const active = formData.get("active") === "on";
   const searchOnly = formData.get("searchOnly") === "on";
 
-  // الصور: رابط لكل سطر + صورة مرفوعة (اختياري)
   const urls = cleanStr(formData.get("imageUrls"), 4000)
     .split(/\r?\n/)
     .map((s) => s.trim())
     .filter(Boolean);
 
-  // تحقّق من صحة الروابط اليدوية قبل أي رفع فعلي — نتجنّب رفع صورة على Blob
-  // عشان بس نكتشف بعدين إن رابط تاني في نفس الفورم غير صالح (Phase 6: broken URLs)
   for (const u of urls) {
     try {
       const parsed = new URL(u);
@@ -141,7 +139,6 @@ async function parseProductForm(
   }
   images.push(...urls);
 
-  // إزالة أي تكرار (نفس الرابط اتكتب أو اترفع أكتر من مرة) — Phase 6: duplicate references
   const uniqueImages = Array.from(new Set(images));
 
   return {
@@ -174,10 +171,18 @@ export async function createProductAction(
   try {
     await createProduct(data);
   } catch (e) {
-    // فشل حفظ المنتج بعد نجاح رفع الصورة على Blob — نمسح الملف اليتيم بدل ما نسيبه معلّق
-    // (Phase 1: لا ننشئ أي database reference غير صالح، ولا نسيب Blob بدون مرجع)
     if (uploadedImageUrl) await deleteBlobIfOwned(uploadedImageUrl);
     return { error: e instanceof Error ? e.message : "فشل حفظ المنتج." };
+  }
+
+  // إشعار كل العملاء بمنتج جديد — بس لو ظاهر فعليًا للعملاء
+  if (data.active) {
+    await broadcastToCustomers(
+      "product",
+      "منتج جديد 🛍️",
+      `أضفنا "${data.name}" على المتجر — شوفه دلوقتي!`,
+      `/products/${data.slug}`
+    );
   }
 
   revalidatePath("/admin/products");
@@ -198,7 +203,6 @@ export async function updateProductAction(
   try {
     await updateProduct(id, data);
   } catch (e) {
-    // نفس المبدأ: صورة جديدة اترفعت بنجاح لكن التحديث فشل — الصورة الجديدة يتيمة، نمسحها
     if (uploadedImageUrl) await deleteBlobIfOwned(uploadedImageUrl);
     return { error: e instanceof Error ? e.message : "فشل تحديث المنتج." };
   }
@@ -243,9 +247,17 @@ export async function adjustPointsAction(
     return { error: e instanceof Error ? e.message : "فشل تعديل النقاط." };
   }
 
+  // إشعار العميل بالتعديل (إضافة أو خصم)
+  const message =
+    amount > 0
+      ? `تم إضافة ${amount} نقطة لحسابك: ${reason}`
+      : `تم خصم ${Math.abs(amount)} نقطة من حسابك: ${reason}`;
+  await notifyCustomer(userId, "points", "نقاط جديدة 🎁", message, "/account");
+
   revalidatePath("/admin/rewards");
   return { ok: true };
-                                }
+}
+
 // ===== آراء العملاء =====
 export async function setReviewStatusAction(formData: FormData): Promise<void> {
   await requireAdmin();
@@ -258,7 +270,8 @@ export async function setReviewStatusAction(formData: FormData): Promise<void> {
   revalidatePath("/reviews");
   revalidatePath("/");
 }
-// ===== الإشعارات =====
+
+// ===== الإشعارات (لوحة تحكم الأدمن) =====
 export async function markNotificationReadAction(formData: FormData): Promise<void> {
   await requireAdmin();
   const id = cleanStr(formData.get("id"), 40);
@@ -275,6 +288,7 @@ export async function markAllNotificationsReadAction(): Promise<void> {
   revalidatePath("/admin/notifications");
   revalidatePath("/admin");
 }
+
 // ===== التنبيهات العامة =====
 export type AnnouncementFormState = { error?: string };
 
@@ -292,6 +306,10 @@ export async function createAnnouncementAction(
   if (isNaN(publishedAt.getTime())) return { error: "التاريخ/الوقت غير صحيح." };
 
   await createAnnouncement(message, publishedAt);
+
+  // إشعار كل العملاء بالتنبيه الجديد في صندوق الإشعارات بتاعهم
+  await broadcastToCustomers("announcement", "تنبيه جديد 📢", message.slice(0, 200), "/");
+
   revalidatePath("/admin/announcements");
   revalidatePath("/");
   return {};
@@ -334,6 +352,7 @@ export async function deleteAnnouncementAction(formData: FormData): Promise<void
   revalidatePath("/admin/announcements");
   revalidatePath("/");
 }
+
 // ===== الكوبونات =====
 export type CouponFormState = { error?: string };
 
@@ -362,6 +381,14 @@ export async function createCouponAction(
   if (existing) return { error: "فيه كوبون بنفس الكود ده بالفعل." };
 
   await prisma.coupon.create({ data: { code, discountPercent, maxUses } });
+
+  // إشعار كل العملاء بكوبون خصم جديد
+  await broadcastToCustomers(
+    "coupon",
+    "كوبون خصم جديد 🏷️",
+    `استخدم الكود ${code} واحصل على خصم ${discountPercent}%!`
+  );
+
   revalidatePath("/admin/coupons");
   return {};
 }
