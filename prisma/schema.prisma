@@ -48,6 +48,7 @@ reviews         Review[]
   productRequests ProductRequest[]
   createdAt       DateTime            @default(now())
   updatedAt       DateTime            @updatedAt
+customerNotifications CustomerNotification[]
 }
 
 /// الطلب — مرتبط بعميل مسجّل أو زائر (userId = null)
@@ -212,4 +213,19 @@ model CouponUse {
 
   @@unique([couponId, customerPhone])
   @@index([couponId])
+}
+/// إشعار للعميل — يوصله عند إضافة منتج جديد، نقاط، تنبيه، أو كوبون
+model CustomerNotification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  type      String // "product" | "points" | "announcement" | "coupon"
+  title     String
+  message   String
+  link      String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId, read])
+  @@index([createdAt])
 }
