@@ -11,10 +11,12 @@ export default function MobileNav({
   items,
   isAdmin,
   hasUnreadNotifications = false,
+  customerNotifications = null,
 }: {
   items: readonly NavItem[];
   isAdmin: boolean;
   hasUnreadNotifications?: boolean;
+  customerNotifications?: { count: number } | null;
 }) {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -94,6 +96,19 @@ export default function MobileNav({
                 </Link>
               ))}
 
+              {customerNotifications && (
+                <Link
+                  href="/notifications"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center justify-between rounded-xl px-3 py-3 font-semibold text-fg transition-colors hover:bg-surface"
+                >
+                  <span>الإشعارات</span>
+                  {customerNotifications.count > 0 && (
+                    <span className="h-2.5 w-2.5 rounded-full bg-red-500" aria-hidden="true" />
+                  )}
+                </Link>
+              )}
+
               <div className="my-2 h-px bg-line" />
               <ThemeSwitcher />
 
@@ -133,4 +148,4 @@ function MenuIcon() {
       <path d="M4 7h16M4 12h16M4 17h16" />
     </svg>
   );
-          }
+}
