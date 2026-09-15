@@ -26,6 +26,7 @@ import {
   deleteAnnouncement,
 } from "@/lib/announcements";
 import { broadcastToCustomers, notifyCustomer } from "@/lib/customer-notifications";
+import { createRewardCoupon } from "@/lib/coupons";
 
 // ===== طلبات "اطلب منتج" =====
 export async function setProductRequestStatusAction(formData: FormData): Promise<void> {
@@ -410,3 +411,38 @@ export async function deleteCouponAction(formData: FormData): Promise<void> {
   }
   revalidatePath("/admin/coupons");
 }
+// ===== كوبونات المكافآت (كوبون خاص لعميل معيّن) =====
+export type RewardCouponFormState = { error?: string; ok?: boolean; code?: string };
+
+export async function createRewardCouponAction(
+  _prev: RewardCouponFormState,
+  formData: FormData
+): Promise<RewardCouponFormState> {
+  await requireAdmin();
+  const userId = cleanStr(formData.get("userId"), 40);
+  const discountPercent = Math.round(Number(cleanStr(formData.get("discountPercent"), 5)));
+
+  if (!userId) return { error: "اختار العميل." };
+  if (
+    !Number.isFinite(discountPercent) ||
+    discountPercent < 10 ||
+    discountPercent > 90 ||
+    discountPercent % 10 !== 0
+  )
+    return { error: "نسبة الخصم لازم تكون من 10% لـ 90% (مضاعفات 10)." };
+
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) return { error: "العميل غير موجود." };
+
+  const { code } = await createRewardCoupon(discountPercent);
+
+  await notifyCustomer(
+    userId,
+    "coupon",
+    "كوبون مكافأة خاص بيك 🎁",
+    `اتبعتلك كوبون خصم ${discountPercent}% — استخدم الكود: ${code}`
+  );
+
+  revalidatePath("/admin/reward-coupons");
+  return { ok: true, code };
+                                             }
