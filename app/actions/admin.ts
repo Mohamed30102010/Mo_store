@@ -421,8 +421,10 @@ export async function createRewardCouponAction(
   await requireAdmin();
   const userId = cleanStr(formData.get("userId"), 40);
   const discountPercent = Math.round(Number(cleanStr(formData.get("discountPercent"), 5)));
+  const reason = cleanStr(formData.get("reason"), 300);
 
   if (!userId) return { error: "اختار العميل." };
+  if (!isNonEmpty(reason, 3)) return { error: "اكتب سبب إرسال الكوبون." };
   if (
     !Number.isFinite(discountPercent) ||
     discountPercent < 10 ||
@@ -440,7 +442,7 @@ export async function createRewardCouponAction(
     userId,
     "coupon",
     "كوبون مكافأة خاص بيك 🎁",
-    `اتبعتلك كوبون خصم ${discountPercent}% — استخدم الكود: ${code}`
+    `اتبعتلك كوبون خصم ${discountPercent}% (${reason}) — استخدم الكود: ${code}`
   );
 
   revalidatePath("/admin/reward-coupons");
