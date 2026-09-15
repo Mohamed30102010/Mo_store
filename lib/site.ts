@@ -20,8 +20,8 @@ export const site = {
   payment: {
     walletNumber: "01208968446", // محفظة (فودافون كاش/انستاباي)
     walletName: "𝑴𝑶 𝑺𝑻𝑶𝑹𝑬 🛒",
-    bankAccount: "EG00 0000 0000 0000 0000",
-    instapay: "syntax@instapay",
+    bankAccount: "قريباً 🔜",
+    instapay: "قريبا 🔜",
     note: "بعد التحويل، ارفع صورة الإيصال عشان نأكّد طلبك بسرعة.",
   },
   // ═══ الشحن — عدّل الأرقام دي حسب شغلك ═══
