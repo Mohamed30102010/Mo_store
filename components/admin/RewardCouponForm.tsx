@@ -49,6 +49,18 @@ export default function RewardCouponForm({
         </div>
       </div>
 
+      <div>
+        <label className="mb-1 block text-sm font-semibold text-fg">السبب</label>
+        <input
+          type="text"
+          name="reason"
+          required
+          maxLength={300}
+          placeholder="مثال: تعويض عن تأخير الشحن"
+          className="w-full rounded-xl border border-line bg-bg px-3 py-2.5 text-fg placeholder:text-muted/60 focus:border-brand-500 focus:outline-none"
+        />
+      </div>
+
       {state.error && <p className="text-sm text-red-300">{state.error}</p>}
       {state.ok && state.code && (
         <p className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-2.5 text-sm text-emerald-300">
