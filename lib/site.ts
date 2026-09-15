@@ -14,7 +14,7 @@ export const site = {
     { label: "الشحن والاسترجاع", href: "/policy" },
     { label: "تواصل", href: "/#contact" },
   ],
-  contactEmail: "support.mostore",
+  contactEmail: "support.mostore@gmail.com",
   whatsapp: "201208968446",
   // بيانات الدفع بالتحويل — عدّلها ببياناتك الحقيقية
   payment: {
