@@ -14,7 +14,7 @@ export const site = {
     { label: "الشحن والاسترجاع", href: "/policy" },
     { label: "تواصل", href: "/#contact" },
   ],
-  contactEmail: "thescorpionfc812@gmail.com",
+  contactEmail: "support.mostore",
   whatsapp: "201208968446",
   // بيانات الدفع بالتحويل — عدّلها ببياناتك الحقيقية
   payment: {
