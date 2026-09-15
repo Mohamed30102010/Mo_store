@@ -52,3 +52,29 @@ export async function redeemCouponInTransaction(
 export async function getAllCoupons() {
   return prisma.coupon.findMany({ orderBy: { createdAt: "desc" } });
                                                 }
+const CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+function randomCouponCode(len = 6): string {
+  let out = "";
+  for (let i = 0; i < len; i++) {
+    out += CODE_CHARS[Math.floor(Math.random() * CODE_CHARS.length)];
+  }
+  return out;
+}
+
+/** ينشئ كوبون مكافأة خاص بعميل معيّن — استخدام واحد بس */
+export async function createRewardCoupon(
+  discountPercent: number
+): Promise<{ code: string }> {
+  for (let attempt = 0; attempt < 6; attempt++) {
+    const code = `GIFT-${randomCouponCode(6)}`;
+    const existing = await prisma.coupon.findUnique({ where: { code } });
+    if (!existing) {
+      await prisma.coupon.create({
+        data: { code, discountPercent, maxUses: 1 },
+      });
+      return { code };
+    }
+  }
+  throw new Error("تعذّر توليد كود فريد، حاول تاني.");
+  }
