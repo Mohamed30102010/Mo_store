@@ -15,13 +15,25 @@ export default async function RequestPage() {
         اكتب لنا تفاصيل المنتج اللي محتاجه، وهنتواصل معاك بأسرع وقت.
       </p>
 
-      <div className="mt-6 rounded-2xl border border-line bg-surface p-6">
-        <ProductRequestForm
-          defaultName={user?.name ?? ""}
-          defaultEmail={user?.email ?? ""}
-          defaultPhone={user?.phone ?? ""}
-        />
-      </div>
+      {user ? (
+        <div className="mt-6 rounded-2xl border border-line bg-surface p-6">
+          <ProductRequestForm
+            defaultName={user.name}
+            defaultEmail={user.email}
+            defaultPhone={user.phone ?? ""}
+          />
+        </div>
+      ) : (
+        <div className="mt-6 rounded-2xl border border-line bg-surface p-6 text-center">
+          <p className="text-muted">لازم تسجّل دخول الأول عشان تطلب منتج.</p>
+          <a
+            href="/login"
+            className="mt-3 inline-block rounded-xl bg-brand-gradient px-5 py-2.5 text-sm font-semibold text-white hover:opacity-95"
+          >
+            سجّل دخول
+          </a>
+        </div>
+      )}
     </div>
   );
 }
