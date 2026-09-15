@@ -13,6 +13,7 @@ const links = [
   { href: "/admin/products", label: "المنتجات", icon: "📦" },
   { href: "/admin/users", label: "العملاء", icon: "👥" },
   { href: "/admin/rewards", label: "نقاط المكافآت", icon: "🎁" },
+  { href: "/admin/reward-coupons", label: "كوبونات المكافآت", icon: "🎁" },
   { href: "/admin/requests", label: "طلبات المنتجات", icon: "📩" },
   { href: "/admin/reviews", label: "آراء العملاء", icon: "⭐" },
   { href: "/admin/notifications", label: "الإشعارات", icon: "🔔" },
