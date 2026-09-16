@@ -13,7 +13,6 @@ export default function GuestWelcomePopup() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    // لو المستخدم قفل النافذة قبل كده في نفس الزيارة، متظهرش تاني
     const dismissed = sessionStorage.getItem(SESSION_KEY) === "1";
     setClosed(dismissed);
   }, []);
@@ -32,7 +31,6 @@ export default function GuestWelcomePopup() {
     } catch {}
   }
 
-  // مبنظهرش النافذة في صفحة تسجيل الدخول أو إنشاء الحساب نفسها
   const isHiddenPath = HIDDEN_PATHS.some((p) => pathname?.startsWith(p));
   if (closed || !visible || isHiddenPath) return null;
 
@@ -70,4 +68,20 @@ export default function GuestWelcomePopup() {
             <Link
               href="/login"
               onClick={handleClose}
-              className="rounded-xl bg-brand-gradient px-6 py-3 text-center text-sm font-bold text-white sh
+              className="rounded-xl bg-brand-gradient px-6 py-3 text-center text-sm font-bold text-white shadow-lg shadow-brand-600/25 transition-all hover:-translate-y-0.5 hover:opacity-95"
+            >
+              تسجيل الدخول
+            </Link>
+            <button
+              type="button"
+              onClick={handleClose}
+              className="rounded-xl border border-line bg-bg px-6 py-3 text-center text-sm font-semibold text-fg transition-colors hover:bg-surface-2"
+            >
+              لاحقًا
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+    }
