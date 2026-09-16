@@ -306,11 +306,15 @@ export async function createAnnouncementAction(
   const publishedAt = publishedAtRaw ? new Date(publishedAtRaw) : new Date();
   if (isNaN(publishedAt.getTime())) return { error: "التاريخ/الوقت غير صحيح." };
 
-  await createAnnouncement(message, publishedAt);
+  const created = await createAnnouncement(message, publishedAt);
 
-  // إشعار كل العملاء بالتنبيه الجديد في صندوق الإشعارات بتاعهم
-  await broadcastToCustomers("announcement", "تنبيه جديد 📢", message.slice(0, 200), "/");
-
+  // إشعار كل العملاء بالتنبيه الجديد — الرابط بيوديهم لصفحة التنبيه كامل، مش الرئيسية
+  await broadcastToCustomers(
+    "announcement",
+    "تنبيه جديد 📢",
+    message.slice(0, 200),
+    `/announcements/${created.id}`
+  );
   revalidatePath("/admin/announcements");
   revalidatePath("/");
   return {};
