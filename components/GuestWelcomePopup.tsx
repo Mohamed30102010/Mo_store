@@ -1,17 +1,40 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
+
+const SESSION_KEY = "guest_popup_dismissed";
+const HIDDEN_PATHS = ["/login", "/register"];
 
 export default function GuestWelcomePopup() {
-  const [closed, setClosed] = useState(false);
+  const pathname = usePathname();
+  const [closed, setClosed] = useState(true);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const t = setTimeout(() => setVisible(true), 600);
-    return () => clearTimeout(t);
+    // لو المستخدم قفل النافذة قبل كده في نفس الزيارة، متظهرش تاني
+    const dismissed = sessionStorage.getItem(SESSION_KEY) === "1";
+    setClosed(dismissed);
   }, []);
 
-  if (closed || !visible) return null;
+  useEffect(() => {
+    if (closed) return;
+    const t = setTimeout(() => setVisible(true), 600);
+    return () => clearTimeout(t);
+  }, [closed]);
+
+  function handleClose() {
+    setClosed(true);
+    setVisible(false);
+    try {
+      sessionStorage.setItem(SESSION_KEY, "1");
+    } catch {}
+  }
+
+  // مبنظهرش النافذة في صفحة تسجيل الدخول أو إنشاء الحساب نفسها
+  const isHiddenPath = HIDDEN_PATHS.some((p) => pathname?.startsWith(p));
+  if (closed || !visible || isHiddenPath) return null;
 
   return (
     <div className="fixed inset-0 z-[200] grid place-items-center bg-black/70 p-4 backdrop-blur-sm">
@@ -27,7 +50,7 @@ export default function GuestWelcomePopup() {
 
         <button
           type="button"
-          onClick={() => setClosed(true)}
+          onClick={handleClose}
           aria-label="إغلاق"
           className="absolute left-4 top-4 grid h-8 w-8 place-items-center rounded-lg border border-line text-muted transition-colors hover:bg-surface-2 hover:text-fg"
         >
@@ -44,22 +67,7 @@ export default function GuestWelcomePopup() {
           </h2>
 
           <div className="mt-5 flex flex-col gap-2.5 sm:flex-row sm:justify-center">
-            <a
+            <Link
               href="/login"
-              className="rounded-xl bg-brand-gradient px-6 py-3 text-center text-sm font-bold text-white shadow-lg shadow-brand-600/25 transition-all hover:-translate-y-0.5 hover:opacity-95"
-            >
-              تسجيل الدخول
-            </a>
-            <button
-              type="button"
-              onClick={() => setClosed(true)}
-              className="rounded-xl border border-line bg-bg px-6 py-3 text-center text-sm font-semibold text-fg transition-colors hover:bg-surface-2"
-            >
-              لاحقًا
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-      }
+              onClick={handleClose}
+              className="rounded-xl bg-brand-gradient px-6 py-3 text-center text-sm font-bold text-white sh
