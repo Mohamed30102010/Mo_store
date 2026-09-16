@@ -38,7 +38,7 @@ export default function GuestWelcomePopup() {
 
   return (
     <div className="fixed inset-0 z-[200] grid place-items-center bg-black/70 p-4 backdrop-blur-sm">
-      <div className="animate-scale-in glow relative w-full max-w-md overflow-hidden rounded-3xl border border-brand-500/50 bg-surface p-7">
+      <div className="animate-slide-up-fade glow relative w-full max-w-md overflow-hidden rounded-3xl border border-brand-500/50 bg-surface p-7">
         <div
           className="pointer-events-none absolute -top-24 -left-24 h-56 w-56 rounded-full bg-brand-500/20 blur-3xl"
           aria-hidden="true"
