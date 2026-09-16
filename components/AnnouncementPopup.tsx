@@ -35,21 +35,26 @@ export default function AnnouncementPopup() {
 
   return (
     <div className="fixed inset-0 z-[200] grid place-items-center bg-black/70 p-4">
-      <div className="animate-scale-in relative w-full max-w-md rounded-2xl border border-brand-600/40 bg-surface p-6 shadow-2xl">
-        <button
-          type="button"
-          onClick={() => setClosed(true)}
-          aria-label="إغلاق"
-          className="absolute left-4 top-4 grid h-8 w-8 place-items-center rounded-lg border border-line text-muted transition-colors hover:bg-surface-2 hover:text-fg"
-        >
-          ✕
-        </button>
-        <div className="mb-3 flex items-center gap-2 text-fg">
+      <div className="animate-scale-in relative flex max-h-[85vh] w-full max-w-md flex-col rounded-2xl border border-brand-600/40 bg-surface shadow-2xl">
+        <div className="flex items-center gap-2 border-b border-line p-6 pb-4 text-fg">
           <span className="text-2xl" aria-hidden="true">📢</span>
           <span className="text-lg font-bold">تنبيه</span>
+          <button
+            type="button"
+            onClick={() => setClosed(true)}
+            aria-label="إغلاق"
+            className="ms-auto grid h-8 w-8 place-items-center rounded-lg border border-line text-muted transition-colors hover:bg-surface-2 hover:text-fg"
+          >
+            ✕
+          </button>
         </div>
-        <p className="whitespace-pre-wrap leading-7 text-fg">{data.message}</p>
+
+        <div className="overflow-y-auto p-6">
+          <p className="whitespace-pre-wrap break-words leading-7 text-fg" dir="auto">
+            {data.message}
+          </p>
+        </div>
       </div>
     </div>
   );
-    }
+      }
