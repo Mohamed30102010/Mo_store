@@ -4,18 +4,12 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 
-const SESSION_KEY = "guest_popup_dismissed";
 const HIDDEN_PATHS = ["/login", "/register"];
 
 export default function GuestWelcomePopup() {
   const pathname = usePathname();
-  const [closed, setClosed] = useState(true);
+  const [closed, setClosed] = useState(false);
   const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const dismissed = sessionStorage.getItem(SESSION_KEY) === "1";
-    setClosed(dismissed);
-  }, []);
 
   useEffect(() => {
     if (closed) return;
@@ -26,9 +20,6 @@ export default function GuestWelcomePopup() {
   function handleClose() {
     setClosed(true);
     setVisible(false);
-    try {
-      sessionStorage.setItem(SESSION_KEY, "1");
-    } catch {}
   }
 
   const isHiddenPath = HIDDEN_PATHS.some((p) => pathname?.startsWith(p));
