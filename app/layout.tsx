@@ -12,6 +12,7 @@ import { getCurrentUser } from "@/lib/auth";
 import SiteBackground from "@/components/SiteBackground";
 import ThemeProvider from "@/components/ThemeProvider";
 import AnnouncementPopup from "@/components/AnnouncementPopup";
+import GuestWelcomePopup from "@/components/GuestWelcomePopup";
 
 export const dynamic = "force-dynamic";
 
@@ -59,6 +60,7 @@ export default async function RootLayout({
         <SiteBackground />
         <TrackingPixels />
         {showAnnouncement && <AnnouncementPopup />}
+        {!user && <GuestWelcomePopup />}
         <CartProvider>
           <SiteHeader />
           <main className="flex-1">{children}</main>
